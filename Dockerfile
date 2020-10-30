@@ -25,16 +25,14 @@ ARG BASE_TAG
 ARG BASE_IMAGE
 ARG LAUNCHER
 
-#! Nvidia ENV
+# nvidia environment
 ENV PATH /usr/local/cuda-10.1/bin:${PATH}
-ENV LD_LIBRARY_PATH /usr/local/cuda/lib64:/usr/local/cuda/extras/CUPTI/lib64
+ENV LD_LIBRARY_PATH /usr/local/cuda/lib64:/usr/local/cuda/extras/CUPTI/lib64:${LD_LIBRARY_PATH}
 ENV LIBRARY_PATH /usr/local/cuda/lib64/stubs
-ENV NVIDIA_VISIBLE_DEVICES all
-ENV NVIDIA_DRIVER_CAPABILITIES compute,utility
 ENV NVIDIA_REQUIRE_CUDA "cuda>=10.1 brand=tesla,driver>=396,driver<397 brand=tesla,driver>=410,driver<411 brand=tesla,driver>=418,driver<419"
 ENV LANG C.UTF-8
 
-#! define and create repository path
+# define and create repository path
 ARG REPO_PATH="${SOURCE_DIR}/src/${REPO_NAME}"
 ARG LAUNCH_PATH="${LAUNCH_DIR}/${REPO_NAME}"
 RUN mkdir -p "${REPO_PATH}"
@@ -53,7 +51,7 @@ ENV DT_LAUNCHER "${LAUNCHER}"
 # create repo directory
 RUN mkdir -p "${REPO_PATH}"
 
-#! Setup Nvidia repo
+# setup Nvidia repo
 RUN apt-get update && apt-get install -y --no-install-recommends \
     gnupg2 curl ca-certificates && \
     curl -fsSL https://developer.download.nvidia.com/compute/cuda/repos/ubuntu1804/x86_64/7fa2af80.pub | apt-key add - && \
@@ -62,7 +60,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     apt-get purge --autoremove -y curl \    
     && rm -rf /var/lib/apt/lists/*
 
-#! Install CUDA, CUDNN
+# install CUDA, CUDNN
 COPY ./dependencies-apt.txt "${REPO_PATH}/"
 RUN dt-apt-install "${REPO_PATH}/dependencies-apt.txt" \
     && apt-mark hold \
@@ -102,5 +100,7 @@ LABEL org.duckietown.label.module.type="${REPO_NAME}" \
     org.duckietown.label.code.version.distro="${DISTRO}" \
     org.duckietown.label.base.image="${BASE_IMAGE}" \
     org.duckietown.label.base.tag="${BASE_TAG}" \
-    org.duckietown.label.maintainer="${MAINTAINER}" \
-    com.nvidia.cudnn.version="7.6.5.32"
+    org.duckietown.label.maintainer="${MAINTAINER}"
+
+# nvidia labels
+LABEL com.nvidia.cudnn.version="7.6.5.32"

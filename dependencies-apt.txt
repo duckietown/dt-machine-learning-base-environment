@@ -1,3 +1,4 @@
+# LIST YOUR APT PACKAGES HERE
 cuda-cudart-dev-10-1
 cuda-compat-10-1
 cuda-libraries-10-1
