@@ -1,0 +1,5 @@
+*pyc
+
+# documentation artifacts
+html/*
+!html/HTML_DOCS_WILL_BE_GENERATED_HERE
