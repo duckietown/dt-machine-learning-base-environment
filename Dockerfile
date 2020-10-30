@@ -26,19 +26,15 @@ ARG BASE_IMAGE
 ARG LAUNCHER
 
 #! Nvidia ENV
-ENV CUDA_VERSION 10.1.243
-ENV CUDA_PKG_VERSION 10-1=$CUDA_VERSION-1
-ENV CUDNN_VERSION 7.6.5.32
-ENV NCCL_VERSION 2.7.8
-LABEL com.nvidia.cudnn.version="${CUDNN_VERSION}"
 ENV PATH /usr/local/cuda-10.1/bin:${PATH}
 ENV LD_LIBRARY_PATH /usr/local/cuda/lib64:/usr/local/cuda/extras/CUPTI/lib64
 ENV LIBRARY_PATH /usr/local/cuda/lib64/stubs
 ENV NVIDIA_VISIBLE_DEVICES all
 ENV NVIDIA_DRIVER_CAPABILITIES compute,utility
 ENV NVIDIA_REQUIRE_CUDA "cuda>=10.1 brand=tesla,driver>=396,driver<397 brand=tesla,driver>=410,driver<411 brand=tesla,driver>=418,driver<419"
+ENV LANG C.UTF-8
 
-# define and create repository path
+#! define and create repository path
 ARG REPO_PATH="${SOURCE_DIR}/src/${REPO_NAME}"
 ARG LAUNCH_PATH="${LAUNCH_DIR}/${REPO_NAME}"
 RUN mkdir -p "${REPO_PATH}"
@@ -67,24 +63,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     && rm -rf /var/lib/apt/lists/*
 
 #! Install CUDA, CUDNN
-RUN apt-get update && apt-get install -y --no-install-recommends \
-        cuda-cudart-$CUDA_PKG_VERSION \
-        cuda-compat-10-1 \
-        cuda-libraries-$CUDA_PKG_VERSION \
-        cuda-npp-$CUDA_PKG_VERSION \
-        cuda-nvtx-$CUDA_PKG_VERSION \
-        cuda-nvml-dev-$CUDA_PKG_VERSION \
-        cuda-command-line-tools-$CUDA_PKG_VERSION \
-        cuda-nvprof-$CUDA_PKG_VERSION \
-        cuda-npp-dev-$CUDA_PKG_VERSION \
-        cuda-libraries-dev-$CUDA_PKG_VERSION \
-        cuda-minimal-build-$CUDA_PKG_VERSION \
-        libnccl-dev=2.7.8-1+cuda10.1 \
-        libnccl2=$NCCL_VERSION-1+cuda10.1 \
-        libcublas-dev=10.2.1.243-1 \
-        libcublas10=10.2.1.243-1 \
-        libcudnn7=$CUDNN_VERSION-1+cuda10.1 \
-        libcudnn7-dev=$CUDNN_VERSION-1+cuda10.1 \
+COPY ./dependencies-apt.txt "${REPO_PATH}/"
+RUN dt-apt-install "${REPO_PATH}/dependencies-apt.txt" \
     && apt-mark hold \
         libnccl2 \
         libcublas10 \
@@ -94,17 +74,14 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     && apt-get autoremove -y  \
     && rm -rf /var/lib/apt/lists/* \
     && ln -s cuda-10.1 /usr/local/cuda \
+    && ln -s $(which ${PYTHON}) /usr/local/bin/python \
     && echo "/usr/local/nvidia/lib" >> /etc/ld.so.conf.d/nvidia.conf \
     && echo "/usr/local/nvidia/lib64" >> /etc/ld.so.conf.d/nvidia.conf
 
 
-# install apt dependencies
-COPY ./dependencies-apt.txt "${REPO_PATH}/"
-RUN dt-apt-install "${REPO_PATH}/dependencies-apt.txt"
-
 # install python dependencies
 COPY ./dependencies-py3.txt "${REPO_PATH}/"
-RUN pip3 install --use-feature=2020-resolver -r ${REPO_PATH}/dependencies-py3.txt
+RUN pip3 install --use-feature=2020-resolver -r ${REPO_PATH}/dependencies-py3.txt -f https://download.pytorch.org/whl/torch_stable.html
 
 # copy the source code
 COPY ./packages "${REPO_PATH}/packages"
@@ -126,37 +103,4 @@ LABEL org.duckietown.label.module.type="${REPO_NAME}" \
     org.duckietown.label.base.image="${BASE_IMAGE}" \
     org.duckietown.label.base.tag="${BASE_TAG}" \
     org.duckietown.label.maintainer="${MAINTAINER}" \
-    com.nvidia.cudnn.version="${CUDNN_VERSION}"
-
-
-
-#! Setup typical ubuntu enviornment
-ENV DEBIAN_FRONTEND=noninteractive
-ENV LANG C.UTF-8
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    python3-tk \
-    libgl1-mesa-glx \
-    && apt-get autoremove -y  \
-    && rm -rf /var/lib/apt/lists/* \
-    && ln -s $(which ${PYTHON}) /usr/local/bin/python
-
-
-#! Setup PIP and its packages:
-ENV NP_VERSION 1.18.0
-ENV TF_VERSION 2.2.1
-ENV TORCH_VERSION 1.7.0
-ENV CV_VERSION 4.4.0.44
-
-RUN pip3 install --upgrade pip setuptools
-RUN pip3 install --use-feature=2020-resolver \
-    numpy==$NP_VERSION \
-    opencv-python==$CV_VERSION \
-    tensorflow==$TF_VERSION \
-    cupy-cuda101 \
-    torch==$TORCH_VERSION+cu101 \
-    torchvision==0.8.1+cu101 \
-    torchaudio==0.7.0 \
-    aido-protocols-daffy \
-    duckietown-world-daffy \
-    duckietown-challenges-daffy \
-    -f https://download.pytorch.org/whl/torch_stable.html
+    com.nvidia.cudnn.version="7.6.5.32"
