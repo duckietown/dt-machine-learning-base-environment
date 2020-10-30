@@ -11,7 +11,7 @@ ARG BASE_IMAGE=dt-commons
 ARG LAUNCHER=default
 
 # define base image
-FROM ubuntu:20.04
+FROM duckietown/${BASE_IMAGE}:${BASE_TAG} as BASE
 
 # recall all arguments
 ARG REPO_NAME
@@ -25,11 +25,12 @@ ARG BASE_TAG
 ARG BASE_IMAGE
 ARG LAUNCHER
 
-# setup nvidia environment
+#! Nvidia ENV
 ENV CUDA_VERSION 10.1.243
-ENV CUDA_PKG_VERSION ${CUDA_VERSION}-1
+ENV CUDA_PKG_VERSION 10-1=$CUDA_VERSION-1
 ENV CUDNN_VERSION 7.6.5.32
 ENV NCCL_VERSION 2.7.8
+LABEL com.nvidia.cudnn.version="${CUDNN_VERSION}"
 ENV PATH /usr/local/cuda-10.1/bin:${PATH}
 ENV LD_LIBRARY_PATH /usr/local/cuda/lib64:/usr/local/cuda/extras/CUPTI/lib64
 ENV LIBRARY_PATH /usr/local/cuda/lib64/stubs
@@ -56,7 +57,6 @@ ENV DT_LAUNCHER "${LAUNCHER}"
 # create repo directory
 RUN mkdir -p "${REPO_PATH}"
 
-
 #! Setup Nvidia repo
 RUN apt-get update && apt-get install -y --no-install-recommends \
     gnupg2 curl ca-certificates && \
@@ -65,7 +65,6 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     echo "deb https://developer.download.nvidia.com/compute/machine-learning/repos/ubuntu1804/x86_64 /" > /etc/apt/sources.list.d/nvidia-ml.list && \
     apt-get purge --autoremove -y curl \    
     && rm -rf /var/lib/apt/lists/*
-
 
 #! Install CUDA, CUDNN
 RUN apt-get update && apt-get install -y --no-install-recommends \
@@ -97,6 +96,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     && ln -s cuda-10.1 /usr/local/cuda \
     && echo "/usr/local/nvidia/lib" >> /etc/ld.so.conf.d/nvidia.conf \
     && echo "/usr/local/nvidia/lib64" >> /etc/ld.so.conf.d/nvidia.conf
+
 
 # install apt dependencies
 COPY ./dependencies-apt.txt "${REPO_PATH}/"
