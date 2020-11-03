@@ -104,3 +104,4 @@ LABEL org.duckietown.label.module.type="${REPO_NAME}" \
 
 # nvidia labels
 LABEL com.nvidia.cudnn.version="7.6.5.32"
+WORKDIR /submission
