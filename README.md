@@ -3,9 +3,9 @@ Docker image for a base image containing machine learning tools
 
 ## How to use:
 
-  * Dockerhub: https://hub.docker.com/r/duckietown/dt-machine-learning-base-environment/
-  * Docker: docker pull duckietown/dt-machine-learning-base-environment:daffy-amd64
-  * Dockerfile: From duckietown/dt-machine-learning-base-environment:daffy-amd64
+  * **Dockerhub**: https://hub.docker.com/r/duckietown/dt-machine-learning-base-environment/
+  * **Docker**: `docker pull duckietown/dt-machine-learning-base-environment:daffy-amd64`
+  * **Dockerfile**: `From duckietown/dt-machine-learning-base-environment:daffy-amd64`
 
 ## Python3 Package included: 
 
