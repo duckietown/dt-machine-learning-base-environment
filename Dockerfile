@@ -10,6 +10,8 @@ ARG BASE_TAG=${DISTRO}-${ARCH}
 ARG BASE_IMAGE=dt-commons
 ARG LAUNCHER=default
 
+
+
 # define base image
 FROM duckietown/${BASE_IMAGE}:${BASE_TAG} as BASE
 
@@ -57,7 +59,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     curl -fsSL https://developer.download.nvidia.com/compute/cuda/repos/ubuntu1804/x86_64/7fa2af80.pub | apt-key add - && \
     echo "deb https://developer.download.nvidia.com/compute/cuda/repos/ubuntu1804/x86_64 /" > /etc/apt/sources.list.d/cuda.list && \
     echo "deb https://developer.download.nvidia.com/compute/machine-learning/repos/ubuntu1804/x86_64 /" > /etc/apt/sources.list.d/nvidia-ml.list && \
-    apt-get purge --autoremove -y curl \    
+    apt-get purge --autoremove -y curl \
     && rm -rf /var/lib/apt/lists/*
 
 # install CUDA, CUDNN
@@ -80,6 +82,11 @@ RUN dt-apt-install "${REPO_PATH}/dependencies-apt.txt" \
 # install python dependencies
 COPY ./dependencies-py3.txt "${REPO_PATH}/"
 RUN pip3 install --use-feature=2020-resolver -r ${REPO_PATH}/dependencies-py3.txt -f https://download.pytorch.org/whl/torch_stable.html
+
+ARG PIP_INDEX_URL
+ENV PIP_INDEX_URL=${PIP_INDEX_URL}
+COPY ./requirements.txt "${REPO_PATH}/"
+RUN pip3 install --use-feature=2020-resolver -r ${REPO_PATH}/requirements.txt
 
 # copy the source code
 COPY ./packages "${REPO_PATH}/packages"
