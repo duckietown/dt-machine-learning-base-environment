@@ -1,6 +1,7 @@
 
 build:
-	dts build_utils aido-container-build --ignore-untagged --force-login
+	dts build_utils update-reqs 
+	dts build_utils aido-container-build --ignore-untagged  --ignore-dirty --force-login
 
 
 push: build

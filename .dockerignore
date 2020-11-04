@@ -6,4 +6,5 @@
 !packages
 !dependencies-apt.txt
 !dependencies-py3.txt
+!requirements*.txt
 !launchers
