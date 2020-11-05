@@ -95,6 +95,8 @@ COPY ./packages "${REPO_PATH}/packages"
 COPY ./launchers/. "${LAUNCH_PATH}/"
 RUN dt-install-launchers "${LAUNCH_PATH}"
 
+RUN pip3 uninstall -y dataclasses
+
 # define default command
 CMD ["bash", "-c", "dt-launcher-${DT_LAUNCHER}"]
 
