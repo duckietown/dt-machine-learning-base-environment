@@ -1,4 +1,5 @@
 aido-protocols-daffy
-duckietown-world-daffy
-duckietown-challenges-daffy
-
+zuper-nodes-z6
+zuper-typing-z6
+zuper-ipce-z6
+zuper-commons-z6
