@@ -1,7 +1,25 @@
-numpy==1.18.0
-opencv-python==4.4.0.44
-tensorflow==2.2.1
-cupy-cuda101
-torch==1.7.0+cu101
-torchvision==0.8.1+cu101
-torchaudio==0.7.0
+# DO NOT MANUALLY INSTALL NUMPY! TF should install it.
+
+# Tensorflow
+tensorflow==2.4.0
+
+# CV
+opencv-python>=4.4.0
+
+# Cupy, numpy but better with GPU!
+cupy-cuda110
+
+# Pytorch
+torch==1.7.1+cu110
+torchvision==0.8.2+cu110
+torchaudio==0.7.2
+
+# The machine learning magic...
+scipy
+matplotlib
+ipython
+jupyter
+pandas
+sympy
+nose
+scikit-learn
