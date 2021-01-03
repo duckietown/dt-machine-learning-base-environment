@@ -3,9 +3,6 @@
 # Tensorflow
 tensorflow==2.4.0
 
-# CV
-opencv-python>=4.4.0
-
 # Cupy, numpy but better with GPU!
 cupy-cuda110
 
@@ -13,13 +10,3 @@ cupy-cuda110
 torch==1.7.1+cu110
 torchvision==0.8.2+cu110
 torchaudio==0.7.2
-
-# The machine learning magic...
-scipy
-matplotlib
-ipython
-jupyter
-pandas
-sympy
-nose
-scikit-learn

@@ -1,4 +1,20 @@
 #! /bin/bash
+# nvidia echo "ironment
+
+# path setup
+echo "PATH=/usr/local/nvidia/bin:/usr/local/cuda/bin:${PATH}" > /etc/environment
+echo "LD_LIBRARY_PATH=/usr/local/nvidia/lib:/usr/local/nvidia/lib64" > /etc/environment
+echo "LIBRARY_PATH=/usr/local/cuda/lib64/stubs" > /etc/environment
+# hostside requirement check
+echo "NVIDIA_REQUIRE_CUDA="cuda>=11.0 brand=tesla,driver>=418,driver<419 brand=tesla,driver>=440,driver<441 brand=tesla,driver>=450,driver<451"" > /etc/environment
+echo "NVIDIA_VISIBLE_DEVICES=all" > /etc/environment
+echo "NVIDIA_DRIVER_CAPABILITIES=compute,utility" > /etc/environment
+echo "LANG C.UTF-8" > /etc/environment
+# verion specification
+echo "CUDA_VERSION=11.0.3" > /etc/environment
+echo "NCCL_VERSION=2.8.3" > /etc/environment
+echo "CUDNN_VERSION=8.0.5.39" > /etc/environment
+
 # Setup Nvidia Repo
 apt-get update
 apt-get install -y --no-install-recommends gnupg2 curl ca-certificates 
@@ -9,9 +25,11 @@ echo "deb https://developer.download.nvidia.com/compute/machine-learning/repos/u
 # Install CUDA, CUDNN
 dt-apt-install "/tmp/dependencies-apt.txt"
 apt-get purge --autoremove -y curl
-apt-get autoremove --purge -y  
-apt-get clean -y  
-rm -rf /var/lib/apt/lists/* 
+apt-get autoremove --purge -y
+apt-get clean -y
+rm -rf /var/lib/apt/lists/*
+
+# Setup paths and links
 ln -s cuda-11.0 /usr/local/cuda 
 ln -s $(which ${PYTHON}) /usr/local/bin/python 
 echo "/usr/local/nvidia/lib" >> /etc/ld.so.conf.d/nvidia.conf 

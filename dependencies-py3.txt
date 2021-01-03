@@ -1,0 +1,14 @@
+# Non-Architecture Specific Packages Only
+
+# CV
+opencv-python>=4.4.0
+
+# The machine learning magic...
+scipy
+matplotlib
+ipython
+jupyter
+pandas
+sympy
+nose
+scikit-learn
