@@ -2,7 +2,7 @@
 # nvidia echo "ironment
 
 # path setup
-echo "PATH=/usr/local/nvidia/bin:/usr/local/cuda/bin:${PATH}" > /etc/environment
+echo "PATH=/usr/local/cuda-10.1/bin:${PATH}" > /etc/environment
 echo "LD_LIBRARY_PATH=/usr/local/cuda/lib64:/usr/local/cuda/extras/CUPTI/lib64:${LD_LIBRARY_PATH}" > /etc/environment
 echo "LIBRARY_PATH=/usr/local/cuda/lib64/stubs" > /etc/environment
 # hostside requirement check
