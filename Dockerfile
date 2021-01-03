@@ -1,6 +1,6 @@
 # parameters
 ARG REPO_NAME="dt-machine-learning-base-environment"
-ARG MAINTAINER="Andrea F. Daniele (afdaniele@ttic.edu)"
+ARG MAINTAINER="Frank C. Qian (frank.qian@autodrive.utoronto.ca)"
 ARG DESCRIPTION="Base image containing common libraries and environment setup for Machine Learning applications."
 ARG ICON="square"
 
