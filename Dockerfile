@@ -58,8 +58,6 @@ RUN pip3 install -U pip \
     && pip3 cache purge
 
 # ====== Start ARCH specific Script ===== #
-# create repo directory
-RUN mkdir -p "${REPO_PATH}"
 
 # Architecture specific packages
 COPY assets/${ARCH}/ /tmp/
@@ -69,6 +67,9 @@ RUN /tmp/install_cuda.sh
 
 # Install tensorflow and pytorch
 RUN /tmp/install_py3.sh
+
+RUN rm -r /tmp/*
+
 # ====== End ARCH specific Script ===== #
 
 # copy the source code
