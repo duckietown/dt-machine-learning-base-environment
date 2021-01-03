@@ -58,6 +58,7 @@ RUN pip3 install -U pip \
     && pip3 cache purge
 
 # ====== Start ARCH specific Script ===== #
+ARG DEBIAN_FRONTEND=noninteractive
 
 # Architecture specific packages
 COPY assets/${ARCH}/ /tmp/
