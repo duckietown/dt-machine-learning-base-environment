@@ -64,7 +64,7 @@ ARG DEBIAN_FRONTEND=noninteractive
 COPY assets/${ARCH}/ /tmp/
 
 # Install Nvidia CUDA
-RUN /tmp/install_cuda.sh
+RUN sudo sh /tmp/install_cuda.sh
 
 # Install tensorflow and pytorch
 RUN /tmp/install_py3.sh
