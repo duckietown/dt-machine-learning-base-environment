@@ -73,6 +73,23 @@ RUN rm -r /tmp/*
 
 # ====== End ARCH specific Script ===== #
 
+# ====== Nvidia ENV setup =====#
+# path setup
+ENV PATH /usr/local/cuda/bin:/usr/local/cuda-10.1/bin:/usr/local/cuda-10.2/bin:${PATH}
+ENV LD_LIBRARY_PATH /usr/local/cuda/lib64:/usr/local/cuda/extras/CUPTI/lib64:/usr/local/cuda-10.2/targets/aarch64-linux/lib:${LD_LIBRARY_PATH}
+ENV LIBRARY_PATH /usr/local/cuda/lib64/stubs
+
+# hostside requirement check
+ENV NVIDIA_REQUIRE_CUDA "cuda>=10.1 brand=tesla,driver>=396,driver<397 brand=tesla,driver>=410,driver<411 brand=tesla,driver>=418,driver<419"
+ENV LANG C.UTF-8
+ENV NVIDIA_VISIBLE_DEVICES "all"
+ENV NVIDIA_DRIVER_CAPABILITIES "compute,utility"
+# verion specification
+ENV CUDA_VERSION 10.1.243
+ENV NCCL_VERSION 2.7.8-1
+ENV CUDNN_VERSION 7.6.5.32
+# ====== End Nvidia ENV setup =====#
+
 # copy the source code
 COPY ./packages "${REPO_PATH}/packages"
 

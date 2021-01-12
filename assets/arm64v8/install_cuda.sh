@@ -29,14 +29,6 @@ echo "/usr/local/cuda-10.0/targets/aarch64-linux/lib" >> /etc/ld.so.conf.d/nvidi
 
 rm /usr/share/glvnd/egl_vendor.d/50_mesa.json
 
-echo "PATH=/usr/local/cuda-$CUDA/bin:/usr/local/cuda/bin:${PATH}" > /etc/environment
-echo "LD_LIBRARY_PATH=/usr/local/cuda-$CUDA/targets/aarch64-linux/lib:${LD_LIBRARY_PATH}" > /etc/environment
-echo "LIBRARY_PATH=/usr/local/cuda/lib64/stubs" > /etc/environment
-echo "NVIDIA_VISIBLE_DEVICES=all" > /etc/environment
-echo "NVIDIA_DRIVER_CAPABILITIES=compute,utility" > /etc/environment
-
-$PATH=/usr/local/cuda-$CUDA/bin:/usr/local/cuda/bin:${PATH}
-$LD_LIBRARY_PATH=/usr/local/cuda-$CUDA/targets/aarch64-linux/lib:${LD_LIBRARY_PATH}
 
 mkdir -p /usr/share/glvnd/egl_vendor.d/ 
 echo '\
