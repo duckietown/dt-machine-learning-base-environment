@@ -90,6 +90,11 @@ ENV NCCL_VERSION 2.7.8-1
 ENV CUDNN_VERSION 7.6.5.32
 # ====== End Nvidia ENV setup =====#
 
+# Configure Jupyter Lab
+RUN jupyter labextension install @jupyter-widgets/jupyterlab-manager@2 \
+    && jupyter lab --generate-config \
+    && python3 -c "from notebook.auth.security import set_password; set_password('quackquack', '/root/.jupyter/jupyter_notebook_config.json')"
+
 # copy the source code
 COPY ./packages "${REPO_PATH}/packages"
 
@@ -111,17 +116,5 @@ LABEL org.duckietown.label.module.type="${REPO_NAME}" \
     org.duckietown.label.base.tag="${BASE_TAG}" \
     org.duckietown.label.maintainer="${MAINTAINER}"
 
-# Configure Jupyter Lab
-RUN jupyter labextension install @jupyter-widgets/jupyterlab-manager@2
-
-RUN jupyter lab --generate-config
-RUN python3 -c "from notebook.auth.security import set_password; set_password('quackquack', '/root/.jupyter/jupyter_notebook_config.json')"
-
 # Set submission folder as default for AIDO challenges
 WORKDIR /submission
-
-# Setup Jupyter
-CMD /bin/bash -c "jupyter lab --ip 0.0.0.0 --port 8888 --allow-root &> /var/log/jupyter.log" & \
-	echo "allow 10 sec for JupyterLab to start @ http://localhost:8888 (password quackquack)" && \
-	echo "JupterLab logging location:  /var/log/jupyter.log  (inside the container)" && \
-	/bin/bash
