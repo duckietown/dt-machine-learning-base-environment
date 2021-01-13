@@ -1,6 +1,6 @@
 # parameters
 ARG REPO_NAME="dt-machine-learning-base-environment"
-ARG MAINTAINER="Frank C. Qian (frank.qian@autodrive.utoronto.ca)"
+ARG MAINTAINER="Frank C. Qian (chude.qian@autodrive.utoronto.ca)"
 ARG DESCRIPTION="Base image containing common libraries and environment setup for Machine Learning applications."
 ARG ICON="square"
 
@@ -57,22 +57,6 @@ RUN pip3 install -U pip \
     && pip3 install -r ${REPO_PATH}/requirements.txt \
     && pip3 cache purge
 
-# ====== Start ARCH specific Script ===== #
-ARG DEBIAN_FRONTEND=noninteractive
-
-# Architecture specific packages
-COPY assets/${ARCH}/ /tmp/
-
-# Install Nvidia CUDA
-RUN sudo sh /tmp/install_cuda.sh
-
-# Install tensorflow and pytorch
-RUN /tmp/install_py3.sh
-
-RUN rm -r /tmp/*
-
-# ====== End ARCH specific Script ===== #
-
 # ====== Nvidia ENV setup =====#
 # path setup
 ENV PATH /usr/local/cuda/bin:/usr/local/cuda-10.1/bin:/usr/local/cuda-10.2/bin:${PATH}
@@ -90,9 +74,24 @@ ENV NCCL_VERSION 2.7.8-1
 ENV CUDNN_VERSION 7.6.5.32
 # ====== End Nvidia ENV setup =====#
 
+# ====== Start ARCH specific Script ===== #
+ARG DEBIAN_FRONTEND=noninteractive
+
+# Architecture specific packages
+COPY assets/${ARCH}/ /tmp/
+
+# Install Nvidia CUDA
+RUN sudo sh /tmp/install_cuda.sh
+
+# Install tensorflow and pytorch
+RUN /tmp/install_py3.sh
+
+RUN rm -r /tmp/*
+
+# ====== End ARCH specific Script ===== #
+
 # Configure Jupyter Lab
-RUN jupyter labextension install @jupyter-widgets/jupyterlab-manager@2 \
-    && jupyter lab --generate-config \
+RUN jupyter lab --generate-config \
     && python3 -c "from notebook.auth.security import set_password; set_password('quackquack', '/root/.jupyter/jupyter_notebook_config.json')"
 
 # copy the source code
