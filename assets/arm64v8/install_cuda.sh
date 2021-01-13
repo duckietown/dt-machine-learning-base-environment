@@ -1,9 +1,9 @@
 #!/bin/bash
 # set the general cuda version
-$CUDA=10.2
-$RELEASE=r32.4
-$CUDAPKG=10-2
-
+export CUDA=10.2
+export RELEASE=r32.4
+export CUDAPKG=10-2
+export DEBIAN_FRONTEND=noninteractive
 # Add Jetson Repository
 apt-get update
 apt-get update && apt-get install -y --no-install-recommends gnupg2 ca-certificates

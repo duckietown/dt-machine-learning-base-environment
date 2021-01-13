@@ -14,7 +14,6 @@ i2c-tools
 iw
 kbd
 language-pack-en-base
-libapt-inst2.0
 libcanberra-gtk3-module
 libgles2
 libglu1-mesa-dev
@@ -27,9 +26,8 @@ libzmq5
 mtd-utils
 parted
 pciutils
-python
-python-pexpect
 python3-distutils
+python3-tk
 sox
 udev
 vulkan-utils
@@ -46,4 +44,7 @@ cuda-minimal-build-10-2
 cuda-license-10-2
 cuda-command-line-tools-10-2
 
-python3-tk
+## Removed Packages
+# python
+# python-pexpect
+# libapt-inst2.0
