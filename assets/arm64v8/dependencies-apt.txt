@@ -1,5 +1,6 @@
 # Non-CUDA L4T Base dependencies
 bc
+build-essential
 bzip2
 can-utils
 freeglut3-dev
@@ -19,7 +20,6 @@ libgles2
 libglu1-mesa-dev
 libglvnd-dev
 libgtk-3-0
-libpython2.7
 libudev1
 libvulkan1
 libzmq5
@@ -29,12 +29,32 @@ pciutils
 python3-distutils
 python3-tk
 sox
+libsox-dev
+libsox-fmt-all
 udev
 vulkan-utils
 wget
 wireless-tools 
 wpasupplicant
 
+# Machine Learning fun
+liblapack-dev
+libblas-dev
+libhdf5-serial-dev
+hdf5-tools
+libhdf5-dev
+zlib1g-dev
+zip
+libjpeg-dev
+libjpeg8-dev
+python3-matplotlib
+gfortran
+libopenblas-dev
+libopenmpi2
+openmpi-bin
+openmpi-common
+protobuf-compiler
+libprotoc-dev
 
 # CUDA related fun
 cuda-libraries-10-2
@@ -47,4 +67,7 @@ cuda-command-line-tools-10-2
 ## Removed Packages
 # python
 # python-pexpect
+# libpython2.7
 # libapt-inst2.0
+#llvm-9
+#llvm-9-dev
