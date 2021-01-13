@@ -1,3 +1,2 @@
 #!/bin/bash
-echo "ARM-32v7 Do not support Tensorflow/Pytorch... Skipping..."
-pip3 cache purge
+echo "ARM-32v7 Do not support Machine Learning Base PIP packages... Skipping..."
