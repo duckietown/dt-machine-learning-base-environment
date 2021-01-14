@@ -2,8 +2,6 @@
 echo "Setting up PIP Package"
 git config --global advice.detachedHead false
 
-# Machine Learning Dependencies:
-pip3 install -U 
 # Pytorch: 
 
 # # torchvision
@@ -29,20 +27,20 @@ pip3 install -U
 
 
 # CUPY
-export CUPY_NVCC_GENERATE_CODE="arch=compute_53,code=sm_53;arch=compute_62,code=sm_62;arch=compute_72,code=sm_72"
-export CUB_PATH="/opt/cub"
-#ARG CFLAGS="-I/opt/cub"
-#ARG LDFLAGS="-L/usr/lib/aarch64-linux-gnu"
-git clone https://github.com/NVlabs/cub opt/cub
-git clone -b v8.0.0b4 https://github.com/cupy/cupy cupy && \
-    cd cupy && \
-    pip3 install fastrlock && \
-    python3 setup.py install --verbose && \
-    cd ../  && \
-    rm -rf cupy
+# export CUPY_NVCC_GENERATE_CODE="arch=compute_53,code=sm_53;arch=compute_62,code=sm_62;arch=compute_72,code=sm_72"
+# export CUB_PATH="/opt/cub"
+# #ARG CFLAGS="-I/opt/cub"
+# #ARG LDFLAGS="-L/usr/lib/aarch64-linux-gnu"
+# git clone https://github.com/NVlabs/cub opt/cub
+# git clone -b v8.0.0b4 https://github.com/cupy/cupy cupy && \
+#     cd cupy && \
+#     pip3 install fastrlock && \
+#     python3 setup.py install --verbose && \
+#     cd ../  && \
+#     rm -rf cupy
 
 # Remove Dataclass to prevent conflict
-pip3 uninstall -y dataclasses
+# pip3 uninstall -y dataclasses
 
 # Cleanup
-pip3 cache purge
+# pip3 cache purge
