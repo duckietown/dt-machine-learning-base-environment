@@ -12,6 +12,7 @@ echo "deb https://repo.download.nvidia.com/jetson/common $RELEASE main" >> /etc/
 
 # install cuda and related packages
 dt-apt-install "/tmp/dependencies-apt.txt"
+
 apt-get purge --autoremove -y curl
 apt-get autoremove --purge -y
 apt-get clean -y
