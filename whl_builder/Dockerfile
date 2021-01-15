@@ -24,17 +24,18 @@ RUN bazel
 # #=========Tensorflow=========#
 FROM duckietown/dt-machine-learning-base-environment:daffy-staging-arm64v8 as TFBuilder
 COPY --from=bazel_builder /usr/local/bin/bazel /usr/local/bin/bazel
+RUN bazel
 # Install Compile Dependencies
 RUN apt update
 RUN apt install -y build-essential make cmake wget zip unzip libhdf5-dev libc-ares-dev libeigen3-dev libatlas-base-dev libopenblas-dev libblas-dev gfortran liblapack-dev python3-h5py
 RUN pip3 install -U setuptools keras_applications keras_preprocessing pybind11 h5py==2.10.0 
 
 RUN mkdir /TFBuilder
-WORKDIR /TFBuilder/
+WORKDIR /TFBuilder
 # Get repo
-RUN echo "Downloading Tensorflow 2.3.2..." \
-    && wget -q https://github.com/tensorflow/tensorflow/archive/v2.3.2.zip \
-    && echo "Download complete..." \
-    && unzip v2.3.2.zip
-WORKDIR /TFBuilder/tensorflow-2.3.2
-
+RUN git clone -b v2.3.2 https://github.com/tensorflow/tensorflow
+WORKDIR /TFBuilder/tensorflow
+COPY .tf_configure.bazelrc .
+RUN export PYTHON_BIN_PATH="/usr/bin/python3"
+RUN bazel build --config=cuda //tensorflow/tools/pip_package:build_pip_package
+RUN ./bazel-bin/tensorflow/tools/pip_package/build_pip_package /

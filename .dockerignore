@@ -8,3 +8,4 @@
 !dependencies-py3.txt
 !requirements*.txt
 !launchers
+!whl_builder

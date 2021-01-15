@@ -85,9 +85,6 @@ RUN sudo sh /tmp/install_cuda.sh
 
 # ===== Build Tensorflow from source ===== #
 
-
-
-
 # ===== END Build Tensorflow from source ===== #
 
 # Install tensorflow and pytorch
