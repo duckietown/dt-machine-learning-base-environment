@@ -83,6 +83,13 @@ COPY assets/${ARCH}/ /tmp/
 # Install Nvidia CUDA
 RUN sudo sh /tmp/install_cuda.sh
 
+# ===== Build Tensorflow from source ===== #
+
+
+
+
+# ===== END Build Tensorflow from source ===== #
+
 # Install tensorflow and pytorch
 RUN /tmp/install_py3.sh
 
@@ -91,8 +98,8 @@ RUN rm -r /tmp/*
 # ====== End ARCH specific Script ===== #
 
 # Configure Jupyter Lab
-RUN jupyter lab --generate-config \
-    && python3 -c "from notebook.auth.security import set_password; set_password('quackquack', '/root/.jupyter/jupyter_notebook_config.json')"
+# RUN jupyter lab --generate-config \
+#     && python3 -c "from notebook.auth.security import set_password; set_password('quackquack', '/root/.jupyter/jupyter_notebook_config.json')"
 
 # copy the source code
 COPY ./packages "${REPO_PATH}/packages"
