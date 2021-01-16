@@ -49,3 +49,7 @@ RUN gcc --version && g++ --version
 #Compile
 RUN bazel build --config=cuda //tensorflow/tools/pip_package:build_pip_package
 RUN ./bazel-bin/tensorflow/tools/pip_package/build_pip_package /
+
+# #=========PyTorch=========#
+
+
