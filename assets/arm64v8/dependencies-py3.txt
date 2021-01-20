@@ -10,7 +10,6 @@ jupyterlab
 setuptools 
 Cython 
 wheel 
-numpy 
 futures 
 protobuf 
 future==0.18.2 

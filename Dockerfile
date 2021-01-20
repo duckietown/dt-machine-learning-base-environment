@@ -83,14 +83,12 @@ COPY assets/${ARCH}/ /tmp/
 # Install Nvidia CUDA
 RUN sudo sh /tmp/install_cuda.sh
 
-# ===== Build Tensorflow from source ===== #
-
-# ===== END Build Tensorflow from source ===== #
-
 # Install tensorflow and pytorch
+RUN mkdir /python_ws
+WORKDIR /python_ws
 RUN /tmp/install_py3.sh
 
-RUN rm -r /tmp/*
+RUN rm -rf /tmp/* /python_ws
 
 # ====== End ARCH specific Script ===== #
 

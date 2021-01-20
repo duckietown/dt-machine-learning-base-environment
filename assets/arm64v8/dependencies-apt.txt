@@ -27,8 +27,11 @@ mtd-utils
 parted
 pciutils
 python3-distutils
+python3-dev
+python3-pip
 python3-tk
 sox
+software-properties-common
 libsox-dev
 libsox-fmt-all
 udev
@@ -64,9 +67,6 @@ cuda-license-10-2
 cuda-command-line-tools-10-2
 
 ## Removed Packages
-# python
-# python-pexpect
-# libpython2.7
 # libapt-inst2.0
 # llvm-9
 # llvm-9-dev
