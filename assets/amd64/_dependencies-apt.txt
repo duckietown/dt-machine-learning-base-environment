@@ -1,4 +1,7 @@
 # LIST YOUR APT PACKAGES HERE
+
+# TODO: CUDA should be 10.2, CUDNN should be 8.0
+
 cuda-cudart-dev-10-1
 cuda-compat-10-1
 cuda-libraries-10-1
@@ -16,5 +19,9 @@ libcublas-dev=10.2.1.243-1
 libcublas10=10.2.1.243-1
 libcudnn7=7.6.5.32-1+cuda10.1
 libcudnn7-dev=7.6.5.32-1+cuda10.1
+
+# TODO: this should not be necessary
 libgl1-mesa-glx
+
+# TODO: remove this, use another backend for numpy
 python3-tk

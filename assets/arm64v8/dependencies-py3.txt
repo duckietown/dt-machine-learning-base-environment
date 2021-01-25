@@ -1,21 +1,2 @@
-pybind11
-onnx
-scipy
-scikit-learn
-pandas
-pycuda 
-numba 
-jupyter 
-jupyterlab 
-setuptools 
-Cython 
-wheel 
-futures 
-protobuf 
-future==0.18.2 
-mock==3.0.5 
-keras_preprocessing==1.1.1 
-keras_applications==1.0.8 
-gast==0.2.2 
-h5py==2.10.0
-
+# required by PyTorch (https://forums.developer.nvidia.com/t/pytorch-for-jetson-version-1-7-0-now-available/72048)
+Cython
