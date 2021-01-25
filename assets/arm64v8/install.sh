@@ -77,8 +77,11 @@ echo "/usr/local/cuda-10.0/targets/aarch64-linux/lib" >> /etc/ld.so.conf.d/nvidi
 ldconfig
 
 # install PyTorch
-wget https://duckietown-public-storage.s3.amazonaws.com/assets/python/wheels/torch-1.7.0-cp38-cp38-linux_aarch64.whl -O /tmp/torch-1.7.0-cp38-cp38-linux_aarch64.whl
-pip3 install /tmp/torch-1.7.0-cp38-cp38-linux_aarch64.whl
+PYTORCH_WHEEL_NAME="torch-${PYTORCH_VERSION}-cp38-cp38-linux_aarch64.whl"
+WHEEL_URL="https://duckietown-public-storage.s3.amazonaws.com/assets/python/wheels/${PYTORCH_WHEEL_NAME}"
+wget -q "${WHEEL_URL}" -O "/tmp/${PYTORCH_WHEEL_NAME}"
+pip3 install "/tmp/${PYTORCH_WHEEL_NAME}"
+rm "/tmp/${PYTORCH_WHEEL_NAME}"
 
 # clean
 pip3 uninstall -y dataclasses

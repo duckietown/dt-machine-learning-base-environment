@@ -59,7 +59,7 @@ ENV NVIDIA_VISIBLE_DEVICES all
 ENV NVIDIA_DRIVER_CAPABILITIES all
 
 # ML libraries environment
-ENV PYTORCH_RELEASE 1.7
+ENV PYTORCH_VERSION 1.7.0
 
 # install apt dependencies
 COPY ./dependencies-apt.txt "${REPO_PATH}/"
@@ -96,7 +96,7 @@ LABEL org.duckietown.label.module.type="${REPO_NAME}" \
 
 # architecture specific setup
 COPY assets/${ARCH} /tmp/${REPO_NAME}
-RUN sudo sh /tmp/${REPO_NAME}/install.sh
+RUN /tmp/${REPO_NAME}/install.sh
 
 # configure environment for CUDA
 ENV PATH /usr/local/cuda-${CUDA_VERSION}/bin:${PATH}
