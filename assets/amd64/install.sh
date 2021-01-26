@@ -23,14 +23,6 @@ apt install -y --no-install-recommends \
     libcublas10=10.2.2.89-1 \
     libcudnn8=$CUDNN_VERSION-1+cuda10.2
 
-    # cuda-command-line-tools-$CUDA_PKG_VERSION \
-    # cuda-minimal-build-$CUDA_PKG_VERSION \
-    # cuda-libraries-dev-$CUDA_PKG_VERSION \
-    # cuda-npp-dev-$CUDA_PKG_VERSION \
-    # cuda-nvml-dev-$CUDA_PKG_VERSION \
-    # cuda-nvprof-$CUDA_PKG_VERSION \
-    # libcudnn8-dev=$CUDNN_VERSION-1+cuda10.2
-
 # Clean up CUDNN Sample
 rm -rf /usr/src/cudnn_samples_v8
 
