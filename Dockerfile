@@ -49,14 +49,9 @@ ENV DT_LAUNCHER "${LAUNCHER}"
 # generic environment
 ENV LANG C.UTF-8
 
-# jetpack environment
-ENV JETPACK_VERSION 4.4.1
-
 # nvidia environment
 ENV CUDA_VERSION 10.2
 ENV CUDNN_VERSION 8.0
-ENV NVIDIA_VISIBLE_DEVICES all
-ENV NVIDIA_DRIVER_CAPABILITIES all
 
 # ML libraries environment
 ENV PYTORCH_VERSION 1.7.0
@@ -68,6 +63,11 @@ RUN dt-apt-install ${REPO_PATH}/dependencies-apt.txt
 # install python3 dependencies
 COPY ./dependencies-py3.txt "${REPO_PATH}/"
 RUN pip3 install --use-feature=2020-resolver -r ${REPO_PATH}/dependencies-py3.txt
+
+ARG PIP_INDEX_URL
+ENV PIP_INDEX_URL=${PIP_INDEX_URL}
+COPY ./requirements.txt "${REPO_PATH}/"
+RUN pip3 install --use-feature=2020-resolver -r ${REPO_PATH}/requirements.txt
 
 # copy the source code
 COPY ./packages "${REPO_PATH}/packages"
@@ -93,35 +93,6 @@ LABEL org.duckietown.label.module.type="${REPO_NAME}" \
 # <== Do not change the code above this line
 # <==================================================
 
-
-# architecture specific setup
-COPY assets/${ARCH} /tmp/${REPO_NAME}
-RUN /tmp/${REPO_NAME}/install.sh
-
-# configure environment for CUDA
-ENV PATH /usr/local/cuda-${CUDA_VERSION}/bin:${PATH}
-ENV LD_LIBRARY_PATH /usr/local/cuda/lib64:/usr/local/cuda/extras/CUPTI/lib64:${LD_LIBRARY_PATH}
-ENV LIBRARY_PATH /usr/local/cuda/lib64/stubs:${LIBRARY_PATH}
-ENV CUDA_TOOLKIT_ROOT_DIR /usr/local/cuda-${CUDA_VERSION}/
-ENV NVIDIA_REQUIRE_CUDA "cuda>=10.2 brand=tesla,driver>=396,driver<397 brand=tesla,driver>=410,driver<411 brand=tesla,driver>=418,driver<419 brand=tesla,driver>=440,driver<441"
-
-
-
-
-
-#ARG CUDA=invalid
-#
-#COPY ./dst/bin /usr/local/cuda-$CUDA/bin
-#COPY ./dst/nvvm /usr/local/cuda-$CUDA/nvvm
-#COPY ./dst/nvvmx /usr/local/cuda-$CUDA/nvvmx
-#COPY ./dst/include /usr/local/cuda-$CUDA/targets/aarch64-linux/include
-#COPY ./dst/lib64/stubs /usr/local/cuda-$CUDA/targets/aarch64-linux/lib/stubs
-#COPY ./dst/lib64/libcudadevrt.a /usr/local/cuda-$CUDA/targets/aarch64-linux/lib/
-#COPY ./dst/lib64/libcudart_static.a /usr/local/cuda-$CUDA/targets/aarch64-linux/lib/
-#
-#RUN ln -s /usr/local/cuda-$CUDA /usr/local/cuda && \
-#    ln -s /usr/local/cuda-$CUDA/targets/aarch64-linux/include /usr/local/cuda/include && \
-#    ln -s /usr/local/cuda-$CUDA/targets/aarch64-linux/lib /usr/local/cuda/lib64
-#
-#ENV PATH /usr/local/cuda-$CUDA/bin:/usr/local/cuda/bin:${PATH}
-#ENV LD_LIBRARY_PATH /usr/local/cuda-$CUDA/targets/aarch64-linux/lib:${LD_LIBRARY_PATH}
+# architecture-specific setup
+COPY assets/${ARCH} "${REPO_PATH}/install"
+RUN "${REPO_PATH}/install/install.sh"
