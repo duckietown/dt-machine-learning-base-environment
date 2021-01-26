@@ -13,12 +13,8 @@ dt-launchfile-init
 # NOTE: Use `dt-exec COMMAND` to run the main process (blocking process)
 
 # launching app
-dt-exec sh /launch/dt-machine-learning-base-environment/duck.sh &&\
-		echo "=====Welcome to Duckietown Machine Learning Enviornment!=====" && \
-		/bin/bash -c "jupyter lab --ip 0.0.0.0 --port 8888 --allow-root &> /var/log/jupyter.log" & \
-	    echo "Please allow 10 sec for JupyterLab to start @ http://localhost:8888 (password quackquack)" && \
-	    echo "JupterLab logging location:  /var/log/jupyter.log  (inside the container)" && \
-	    /bin/bash
+dt-exec echo "This is an empty launch script. Update it to launch your application."
+
 
 # ----------------------------------------------------------------------------
 # YOUR CODE ABOVE THIS LINE
