@@ -15,16 +15,16 @@ CUDA_PKG_VERSION="10-2=${CUDA_VERSION}-1"
 
 apt update
 apt install -y --no-install-recommends \
-    cuda-libraries-$CUDA_PKG_VERSION \
-    cuda-npp-$CUDA_PKG_VERSION \
-    cuda-nvtx-$CUDA_PKG_VERSION \
-    cuda-nvml-dev-$CUDA_PKG_VERSION \
     cuda-command-line-tools-$CUDA_PKG_VERSION \
-    cuda-nvprof-$CUDA_PKG_VERSION \
-    cuda-npp-dev-$CUDA_PKG_VERSION \
-    cuda-libraries-dev-$CUDA_PKG_VERSION \
     cuda-minimal-build-$CUDA_PKG_VERSION \
     cuda-cudart-$CUDA_PKG_VERSION \
+    cuda-libraries-$CUDA_PKG_VERSION \
+    cuda-libraries-dev-$CUDA_PKG_VERSION \
+    cuda-npp-$CUDA_PKG_VERSION \
+    cuda-npp-dev-$CUDA_PKG_VERSION \
+    cuda-nvtx-$CUDA_PKG_VERSION \
+    cuda-nvml-dev-$CUDA_PKG_VERSION \
+    cuda-nvprof-$CUDA_PKG_VERSION \
     libcudnn8=$CUDNN_VERSION-1+cuda10.2 \
     libcudnn8=$CUDNN_VERSION-1+cuda10.2 \
     libcudnn8-dev=$CUDNN_VERSION-1+cuda10.2
