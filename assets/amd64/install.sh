@@ -30,7 +30,7 @@ apt install -y --no-install-recommends \
     libcudnn8-dev=$CUDNN_VERSION-1+cuda10.2
 
 # install PyTorch
-pip3 install torch==1.7.0+cu102 -f https://download.pytorch.org/whl/torch_stable.html
+pip3 install https://download.pytorch.org/whl/cu102/torch-1.7.0-cp38-cp38-linux_x86_64.whl
 
 # clean
 pip3 uninstall -y dataclasses
