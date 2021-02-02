@@ -55,6 +55,7 @@ ENV CUDNN_VERSION 8.0
 
 # ML libraries environment
 ENV PYTORCH_VERSION 1.7.0
+ENV PYTORCHVISION_VERSION 0.8.0a0+2f40a48
 
 # install apt dependencies
 COPY ./dependencies-apt.txt "${REPO_PATH}/"
