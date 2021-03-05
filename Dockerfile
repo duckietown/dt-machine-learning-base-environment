@@ -27,6 +27,10 @@ ARG BASE_TAG
 ARG BASE_IMAGE
 ARG LAUNCHER
 
+ENV PATH="/usr/local/cuda-10.2/bin:${PATH}"
+ENV LD_LIBRARY_PATH="/usr/local/cuda-10.2/lib64:${LD_LIBRARY_PATH}"
+
+
 # check build arguments
 RUN dt-build-env-check "${REPO_NAME}" "${MAINTAINER}" "${DESCRIPTION}"
 
@@ -56,6 +60,7 @@ ENV CUDNN_VERSION 8.0
 # ML libraries environment
 ENV PYTORCH_VERSION 1.7.0
 ENV PYTORCHVISION_VERSION 0.8.0a0+2f40a48
+ENV TENSORRT_VERSION 7.1.3.4
 
 # install apt dependencies
 COPY ./dependencies-apt.txt "${REPO_PATH}/"
@@ -93,6 +98,7 @@ LABEL org.duckietown.label.module.type="${REPO_NAME}" \
     org.duckietown.label.maintainer="${MAINTAINER}"
 # <== Do not change the code above this line
 # <==================================================
+
 
 # architecture-specific setup
 COPY assets/${ARCH} "${REPO_PATH}/install"
