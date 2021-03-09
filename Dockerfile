@@ -12,6 +12,7 @@ ARG DISTRO=daffy
 ARG BASE_TAG=${DISTRO}-${ARCH}
 ARG BASE_IMAGE=dt-commons
 ARG LAUNCHER=default
+ARG CUDA_VERSION_ARG=10.2
 
 # define base image
 FROM duckietown/${BASE_IMAGE}:${BASE_TAG} as BASE
@@ -26,6 +27,7 @@ ARG ICON
 ARG BASE_TAG
 ARG BASE_IMAGE
 ARG LAUNCHER
+ARG CUDA_VERSION_ARG
 
 # check build arguments
 RUN dt-build-env-check "${REPO_NAME}" "${MAINTAINER}" "${DESCRIPTION}"
@@ -50,11 +52,10 @@ ENV DT_LAUNCHER "${LAUNCHER}"
 ENV LANG C.UTF-8
 
 # nvidia environment
-ENV CUDA_VERSION 10.2
+ENV CUDA_VERSION "${CUDA_VERSION_ARG}"
 ENV CUDNN_VERSION 8.0
 
 # add cuda to path
-RUN ln -s /usr/local/cuda-${CUDA_VERSION} /usr/local/cuda
 ENV PATH="/usr/local/cuda/bin:${PATH}"
 ENV LD_LIBRARY_PATH="/usr/local/cuda/lib64:${LD_LIBRARY_PATH}"
 
