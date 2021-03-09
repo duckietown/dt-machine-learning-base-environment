@@ -27,10 +27,6 @@ ARG BASE_TAG
 ARG BASE_IMAGE
 ARG LAUNCHER
 
-ENV PATH="/usr/local/cuda-10.2/bin:${PATH}"
-ENV LD_LIBRARY_PATH="/usr/local/cuda-10.2/lib64:${LD_LIBRARY_PATH}"
-
-
 # check build arguments
 RUN dt-build-env-check "${REPO_NAME}" "${MAINTAINER}" "${DESCRIPTION}"
 
@@ -56,6 +52,12 @@ ENV LANG C.UTF-8
 # nvidia environment
 ENV CUDA_VERSION 10.2
 ENV CUDNN_VERSION 8.0
+
+# add cuda to path
+RUN ln -s /usr/local/cuda-${CUDA_VERSION} /usr/local/cuda
+ENV PATH="/usr/local/cuda/bin:${PATH}"
+ENV LD_LIBRARY_PATH="/usr/local/cuda/lib64:${LD_LIBRARY_PATH}"
+
 
 # ML libraries environment
 ENV PYTORCH_VERSION 1.7.0
