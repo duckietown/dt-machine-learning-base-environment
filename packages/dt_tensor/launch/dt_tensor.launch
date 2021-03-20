@@ -1,9 +1,0 @@
-<launch>
-  <arg name="veh"/>
-  <arg name="map_file" default="hub"/>
-  <group ns="$(arg veh)">
-    <node pkg="dt_tensor" type="dt_tensor_node.py" name="dt_tensor_node" output="screen">
-    </node>
-  </group>
-
-</launch>
