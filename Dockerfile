@@ -12,6 +12,7 @@ ARG DISTRO=daffy
 ARG BASE_TAG=${DISTRO}-${ARCH}
 ARG BASE_IMAGE=dt-commons
 ARG LAUNCHER=default
+ARG CUDA_VERSION=10.2
 
 # define base image
 FROM duckietown/${BASE_IMAGE}:${BASE_TAG} as BASE
@@ -26,6 +27,7 @@ ARG ICON
 ARG BASE_TAG
 ARG BASE_IMAGE
 ARG LAUNCHER
+ARG CUDA_VERSION
 
 # check build arguments
 RUN dt-build-env-check "${REPO_NAME}" "${MAINTAINER}" "${DESCRIPTION}"
@@ -50,12 +52,18 @@ ENV DT_LAUNCHER "${LAUNCHER}"
 ENV LANG C.UTF-8
 
 # nvidia environment
-ENV CUDA_VERSION 10.2
+ENV CUDA_VERSION "${CUDA_VERSION}"
 ENV CUDNN_VERSION 8.0
+
+# add cuda to path
+ENV PATH="/usr/local/cuda/bin:${PATH}"
+ENV LD_LIBRARY_PATH="/usr/local/cuda/lib64:${LD_LIBRARY_PATH}"
+
 
 # ML libraries environment
 ENV PYTORCH_VERSION 1.7.0
 ENV PYTORCHVISION_VERSION 0.8.0a0+2f40a48
+ENV TENSORRT_VERSION 7.1.3.4
 
 # install apt dependencies
 COPY ./dependencies-apt.txt "${REPO_PATH}/"
@@ -93,6 +101,7 @@ LABEL org.duckietown.label.module.type="${REPO_NAME}" \
     org.duckietown.label.maintainer="${MAINTAINER}"
 # <== Do not change the code above this line
 # <==================================================
+
 
 # architecture-specific setup
 COPY assets/${ARCH} "${REPO_PATH}/install"
