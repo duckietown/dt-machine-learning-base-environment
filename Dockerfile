@@ -1,41 +1,39 @@
 # parameters
 ARG REPO_NAME="dt-machine-learning-base-environment"
-ARG MAINTAINER="Andrea F. Daniele (afdaniele@ttic.edu)"
 ARG DESCRIPTION="Base image containing common libraries and environment setup for Machine Learning applications."
-ARG ICON="square"
+ARG MAINTAINER="Andrea F. Daniele (afdaniele@ttic.edu)"
+# pick an icon from: https://fontawesome.com/v4.7.0/icons/
+ARG ICON="cube"
 
-ARG ARCH=amd64
+# ==================================================>
+# ==> Do not change the code below this line
+ARG ARCH=arm32v7
 ARG DISTRO=daffy
 ARG BASE_TAG=${DISTRO}-${ARCH}
 ARG BASE_IMAGE=dt-commons
 ARG LAUNCHER=default
-
-
+ARG CUDA_VERSION=10.2
 
 # define base image
 FROM duckietown/${BASE_IMAGE}:${BASE_TAG} as BASE
 
 # recall all arguments
+ARG ARCH
+ARG DISTRO
 ARG REPO_NAME
 ARG DESCRIPTION
 ARG MAINTAINER
 ARG ICON
-ARG ARCH
-ARG DISTRO
-ARG ROS_DISTRO
 ARG BASE_TAG
 ARG BASE_IMAGE
 ARG LAUNCHER
+ARG CUDA_VERSION
 
-# nvidia environment
-ENV PATH /usr/local/cuda-10.1/bin:${PATH}
-ENV LD_LIBRARY_PATH /usr/local/cuda/lib64:/usr/local/cuda/extras/CUPTI/lib64:${LD_LIBRARY_PATH}
-ENV LIBRARY_PATH /usr/local/cuda/lib64/stubs
-ENV NVIDIA_REQUIRE_CUDA "cuda>=10.1 brand=tesla,driver>=396,driver<397 brand=tesla,driver>=410,driver<411 brand=tesla,driver>=418,driver<419"
-ENV LANG C.UTF-8
+# check build arguments
+RUN dt-build-env-check "${REPO_NAME}" "${MAINTAINER}" "${DESCRIPTION}"
 
-# define and create repository path
-ARG REPO_PATH="${SOURCE_DIR}/src/${REPO_NAME}"
+# define/create repository path
+ARG REPO_PATH="${SOURCE_DIR}/${REPO_NAME}"
 ARG LAUNCH_PATH="${LAUNCH_DIR}/${REPO_NAME}"
 RUN mkdir -p "${REPO_PATH}"
 RUN mkdir -p "${LAUNCH_PATH}"
@@ -50,52 +48,67 @@ ENV DT_REPO_PATH "${REPO_PATH}"
 ENV DT_LAUNCH_PATH "${LAUNCH_PATH}"
 ENV DT_LAUNCHER "${LAUNCHER}"
 
-# create repo directory
-RUN mkdir -p "${REPO_PATH}"
+# generic environment
+ENV LANG C.UTF-8
 
-# setup Nvidia repo
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    gnupg2 curl ca-certificates && \
-    curl -fsSL https://developer.download.nvidia.com/compute/cuda/repos/ubuntu1804/x86_64/7fa2af80.pub | apt-key add - && \
-    echo "deb https://developer.download.nvidia.com/compute/cuda/repos/ubuntu1804/x86_64 /" > /etc/apt/sources.list.d/cuda.list && \
-    echo "deb https://developer.download.nvidia.com/compute/machine-learning/repos/ubuntu1804/x86_64 /" > /etc/apt/sources.list.d/nvidia-ml.list && \
-    apt-get purge --autoremove -y curl \
-    && rm -rf /var/lib/apt/lists/*
+# ==================================================>
+# ==> Do not change the code above this line
 
-# install CUDA, CUDNN
+#! add cuda to path
+ENV PATH /usr/local/nvidia/bin:/usr/local/cuda/bin:${PATH}
+ENV LD_LIBRARY_PATH /usr/local/nvidia/lib:/usr/local/nvidia/lib64
+
+#! nvidia-container-runtime
+# https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/user-guide.html
+ENV NVIDIA_VISIBLE_DEVICES all
+ENV NVIDIA_DRIVER_CAPABILITIES all
+# TODO: Fix requreiment to elimitate old GPU to run the dt-ml image
+#ENV NVIDIA_REQUIRE_ARCH "maxwell pascal volta turing ampere"
+#ENV NVIDIA_REQUIRE_CUDA "cuda>=10.2"
+
+#! VERSIONING CONFIGURATION
+# this is mainly for AMD64 as on Jetson it comes with the image
+ENV CUDA_VERSION 10.2.89
+ENV CUDA_PKG_VERSION 10-2=$CUDA_VERSION-1
+ENV NCCL_VERSION 2.8.4
+ENV CUDNN_VERSION 8.1.1.33
+
+ENV PYTORCH_VERSION 1.7.0
+ENV PYTORCHVISION_VERSION 0.8.0a0+2f40a48
+
+ENV TENSORRT_VERSION 7.1.3.4
+
+#! install apt dependencies
 COPY ./dependencies-apt.txt "${REPO_PATH}/"
-RUN dt-apt-install "${REPO_PATH}/dependencies-apt.txt" \
-    && apt-mark hold \
-        libnccl2 \
-        libcublas10 \
-        libcudnn7 \
-        libnccl-dev \
-        libcublas-dev\
-    && apt-get autoremove -y  \
-    && rm -rf /var/lib/apt/lists/* \
-    && ln -s cuda-10.1 /usr/local/cuda \
-    && ln -s $(which ${PYTHON}) /usr/local/bin/python \
-    && echo "/usr/local/nvidia/lib" >> /etc/ld.so.conf.d/nvidia.conf \
-    && echo "/usr/local/nvidia/lib64" >> /etc/ld.so.conf.d/nvidia.conf
+RUN dt-apt-install ${REPO_PATH}/dependencies-apt.txt
 
-
-# install python dependencies
+#! install python3 dependencies
 COPY ./dependencies-py3.txt "${REPO_PATH}/"
-RUN pip3 install --use-feature=2020-resolver -r ${REPO_PATH}/dependencies-py3.txt -f https://download.pytorch.org/whl/torch_stable.html
+RUN pip3 install --use-feature=2020-resolver -r ${REPO_PATH}/dependencies-py3.txt
 
+#! install Zuper dependencies
 ARG PIP_INDEX_URL
 ENV PIP_INDEX_URL=${PIP_INDEX_URL}
 COPY ./requirements.txt "${REPO_PATH}/"
 RUN pip3 install --use-feature=2020-resolver -r ${REPO_PATH}/requirements.txt
+
+#! install ML Related Stuff 
+COPY assets/${ARCH} "${REPO_PATH}/install"
+RUN "${REPO_PATH}/install/install.sh"
+
+#! Symbolic Link:
+RUN ln -s /usr/local/cuda-10.2 /usr/local/cuda
+
+# ==================================================>
+# ==> Do not change the code below this line
 
 # copy the source code
 COPY ./packages "${REPO_PATH}/packages"
 
 # install launcher scripts
 COPY ./launchers/. "${LAUNCH_PATH}/"
+COPY ./launchers/default.sh "${LAUNCH_PATH}/"
 RUN dt-install-launchers "${LAUNCH_PATH}"
-
-RUN pip3 uninstall -y dataclasses
 
 # define default command
 CMD ["bash", "-c", "dt-launcher-${DT_LAUNCHER}"]
@@ -110,7 +123,3 @@ LABEL org.duckietown.label.module.type="${REPO_NAME}" \
     org.duckietown.label.base.image="${BASE_IMAGE}" \
     org.duckietown.label.base.tag="${BASE_TAG}" \
     org.duckietown.label.maintainer="${MAINTAINER}"
-
-# nvidia labels
-LABEL com.nvidia.cudnn.version="7.6.5.32"
-WORKDIR /submission
