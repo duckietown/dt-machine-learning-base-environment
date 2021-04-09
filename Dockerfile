@@ -63,7 +63,7 @@ ENV LD_LIBRARY_PATH /usr/local/nvidia/lib:/usr/local/nvidia/lib64
 ENV NVIDIA_VISIBLE_DEVICES all
 ENV NVIDIA_DRIVER_CAPABILITIES all
 #ENV NVIDIA_REQUIRE_ARCH "maxwell pascal volta turing ampere"
-ENV NVIDIA_REQUIRE_CUDA "cuda>=10.2"
+#ENV NVIDIA_REQUIRE_CUDA "cuda>=10.2"
 
 #! VERSIONING CONFIGURATION
 # this is mainly for AMD64 as on Jetson it comes with the image
