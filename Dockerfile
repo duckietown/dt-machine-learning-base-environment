@@ -62,6 +62,7 @@ ENV LD_LIBRARY_PATH /usr/local/nvidia/lib:/usr/local/nvidia/lib64
 # https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/user-guide.html
 ENV NVIDIA_VISIBLE_DEVICES all
 ENV NVIDIA_DRIVER_CAPABILITIES all
+# TODO: Fix requreiment to elimitate old GPU to run the dt-ml image
 #ENV NVIDIA_REQUIRE_ARCH "maxwell pascal volta turing ampere"
 #ENV NVIDIA_REQUIRE_CUDA "cuda>=10.2"
 
