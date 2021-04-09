@@ -20,10 +20,11 @@ apt install -y --no-install-recommends \
     cuda-nvtx-$CUDA_PKG_VERSION \
     libcublas10=10.2.2.89-1 \
     libnccl2=$NCCL_VERSION-1+cuda10.2 \
-
     libcudnn8=$CUDNN_VERSION-1+cuda10.2
-
 apt-mark hold libnccl2 libcudnn8 cuda-compat-10-2
+
+# TODO Install Tensor RT here
+# >>>...
 
 # Clean up
 rm -rf /usr/src/cudnn_samples_v8 && rm -rf /var/lib/apt/lists/*
