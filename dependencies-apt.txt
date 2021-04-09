@@ -1,9 +1,4 @@
 # Non-Architecture Specific Packages Only
-
-# required by PyTorch
-libopenblas-base
-libopenmpi-dev
-
 # needed for OpenCV
 libgl1-mesa-glx
 

@@ -51,32 +51,55 @@ ENV DT_LAUNCHER "${LAUNCHER}"
 # generic environment
 ENV LANG C.UTF-8
 
-# nvidia environment
-ENV CUDA_VERSION "${CUDA_VERSION}"
-ENV CUDNN_VERSION 8.0
+# ==================================================>
+# ==> Do not change the code above this line
 
-# add cuda to path
-ENV PATH="/usr/local/cuda/bin:${PATH}"
-ENV LD_LIBRARY_PATH="/usr/local/cuda/lib64:${LD_LIBRARY_PATH}"
+#! add cuda to path
+ENV PATH /usr/local/nvidia/bin:/usr/local/cuda/bin:${PATH}
+ENV LD_LIBRARY_PATH /usr/local/nvidia/lib:/usr/local/nvidia/lib64
 
+#! nvidia-container-runtime
+# https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/user-guide.html
+ENV NVIDIA_VISIBLE_DEVICES all
+ENV NVIDIA_DRIVER_CAPABILITIES all
+#ENV NVIDIA_REQUIRE_ARCH "maxwell pascal volta turing ampere"
+ENV NVIDIA_REQUIRE_CUDA "cuda>=10.2"
 
-# ML libraries environment
+#! VERSIONING CONFIGURATION
+# this is mainly for AMD64 as on Jetson it comes with the image
+ENV CUDA_VERSION 10.2.89
+ENV CUDA_PKG_VERSION 10-2=$CUDA_VERSION-1
+ENV NCCL_VERSION 2.8.4
+ENV CUDNN_VERSION 8.1.1.33
+
 ENV PYTORCH_VERSION 1.7.0
 ENV PYTORCHVISION_VERSION 0.8.0a0+2f40a48
+
 ENV TENSORRT_VERSION 7.1.3.4
 
-# install apt dependencies
+#! install apt dependencies
 COPY ./dependencies-apt.txt "${REPO_PATH}/"
 RUN dt-apt-install ${REPO_PATH}/dependencies-apt.txt
 
-# install python3 dependencies
+#! install python3 dependencies
 COPY ./dependencies-py3.txt "${REPO_PATH}/"
 RUN pip3 install --use-feature=2020-resolver -r ${REPO_PATH}/dependencies-py3.txt
 
+#! install Zuper dependencies
 ARG PIP_INDEX_URL
 ENV PIP_INDEX_URL=${PIP_INDEX_URL}
 COPY ./requirements.txt "${REPO_PATH}/"
 RUN pip3 install --use-feature=2020-resolver -r ${REPO_PATH}/requirements.txt
+
+#! install ML Related Stuff 
+COPY assets/${ARCH} "${REPO_PATH}/install"
+RUN "${REPO_PATH}/install/install.sh"
+
+#! Symbolic Link:
+RUN ln -s /usr/local/cuda-10.2 /usr/local/cuda
+
+# ==================================================>
+# ==> Do not change the code below this line
 
 # copy the source code
 COPY ./packages "${REPO_PATH}/packages"
@@ -99,10 +122,3 @@ LABEL org.duckietown.label.module.type="${REPO_NAME}" \
     org.duckietown.label.base.image="${BASE_IMAGE}" \
     org.duckietown.label.base.tag="${BASE_TAG}" \
     org.duckietown.label.maintainer="${MAINTAINER}"
-# <== Do not change the code above this line
-# <==================================================
-
-
-# architecture-specific setup
-COPY assets/${ARCH} "${REPO_PATH}/install"
-RUN "${REPO_PATH}/install/install.sh"

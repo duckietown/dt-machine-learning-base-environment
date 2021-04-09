@@ -2,9 +2,6 @@
 
 source /environment.sh
 
-ln -s /usr/local/cuda-${CUDA_VERSION} /usr/local/cuda
-
-
 # initialize launch file
 dt-launchfile-init
 

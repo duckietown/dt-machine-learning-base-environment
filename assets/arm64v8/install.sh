@@ -2,6 +2,10 @@
 
 set -e
 
+apt update
+apt install libopenblas-base libopenmpi-dev
+rm -rf /var/lib/apt/lists/*
+
 # download PyTorch
 echo "Downloading PyTorch v${PYTORCH_VERSION}..."
 PYTORCH_WHEEL_NAME="torch-${PYTORCH_VERSION}.cuda.cudnn-cp38-cp38-linux_aarch64.whl"
@@ -13,14 +17,14 @@ pip3 install "/tmp/${PYTORCH_WHEEL_NAME}"
 rm "/tmp/${PYTORCH_WHEEL_NAME}"
 
 # download torchvision
-#echo "Downloading TorchVision v${PYTORCHVISION_VERSION}..."
-#PYTORCHVISION_WHEEL_NAME="torchvision-${PYTORCHVISION_VERSION}-cp38-cp38-linux_aarch64.whl"
-#WHEEL_URL="https://duckietown-public-storage.s3.amazonaws.com/assets/python/wheels/${PYTORCH_WHEEL_NAME}"
-#wget -q "${WHEEL_URL}" -O "/tmp/${PYTORCHVISION_WHEEL_NAME}"
+echo "Downloading TorchVision v${PYTORCHVISION_VERSION}..."
+PYTORCHVISION_WHEEL_NAME="torchvision-${PYTORCHVISION_VERSION}-cp38-cp38-linux_aarch64.whl"
+WHEEL_URL="https://duckietown-public-storage.s3.amazonaws.com/assets/python/wheels/${PYTORCH_WHEEL_NAME}"
+wget -q "${WHEEL_URL}" -O "/tmp/${PYTORCHVISION_WHEEL_NAME}"
 # install torchvision
-#echo "Installing TorchVision v${PYTORCHVISION_VERSION}..."
-#pip3 install "/tmp/${PYTORCHVISION_WHEEL_NAME}"
-#rm "/tmp/${PYTORCHVISION_WHEEL_NAME}"
+echo "Installing TorchVision v${PYTORCHVISION_VERSION}..."
+pip3 install "/tmp/${PYTORCHVISION_WHEEL_NAME}"
+rm "/tmp/${PYTORCHVISION_WHEEL_NAME}"
 
 # download TensorRT
 echo "Downloading TensorRT v${TENSORRT_VERSION}..."
