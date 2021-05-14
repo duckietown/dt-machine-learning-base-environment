@@ -1,1 +1,6 @@
 # Non-Architecture Specific Packages Only
+tqdm
+pandas
+seaborn
+matplotlib
+scipy
