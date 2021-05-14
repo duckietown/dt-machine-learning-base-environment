@@ -30,8 +30,9 @@ apt-mark hold libnccl2 libcudnn8 cuda-compat-10-2
 rm -rf /usr/src/cudnn_samples_v8 && rm -rf /var/lib/apt/lists/*
 
 # install PyTorch
-pip3 install https://download.pytorch.org/whl/cu102/torch-1.7.0-cp38-cp38-linux_x86_64.whl
-pip3 install torchvision==0.8.0
+pip3 install torch==1.7.1
+#https://download.pytorch.org/whl/cu102/torch-1.7.0-cp38-cp38-linux_x86_64.whl
+pip3 install torchvision==0.8.1
 
 # clean
 pip3 uninstall -y dataclasses
