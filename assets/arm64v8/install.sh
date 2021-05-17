@@ -27,6 +27,7 @@ pip3 install "/tmp/${TENSORRT_WHEEL_NAME}"
 rm "/tmp/${TENSORRT_WHEEL_NAME}"
 
 # clean
+pip3 install pycuda
 pip3 uninstall -y dataclasses
 
 apt-get update && apt-get install g++-8 unzip -y

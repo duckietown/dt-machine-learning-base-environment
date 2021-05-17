@@ -92,12 +92,13 @@ ENV PIP_INDEX_URL=${PIP_INDEX_URL}
 COPY ./requirements.txt "${REPO_PATH}/"
 RUN pip3 install --use-feature=2020-resolver -r ${REPO_PATH}/requirements.txt
 
-#! install ML Related Stuff 
+#! Symbolic Link:
+RUN ln -s /usr/local/cuda-10.2 /usr/local/cuda
+
+#! install ML Related Stuff
 COPY assets/${ARCH} "${REPO_PATH}/install"
 RUN "${REPO_PATH}/install/install.sh"
 
-#! Symbolic Link:
-RUN ln -s /usr/local/cuda-10.2 /usr/local/cuda
 
 # ==================================================>
 # ==> Do not change the code below this line
