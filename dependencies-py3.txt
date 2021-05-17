@@ -1,6 +1,7 @@
 # Non-Architecture Specific Packages Only
 tqdm
 seaborn
+pandas
 matplotlib>=3.2.2
 scipy>=1.4.1
 numpy>=1.18.5
