@@ -26,8 +26,17 @@ echo "Installing TensorRT v${TENSORRT_VERSION}..."
 pip3 install "/tmp/${TENSORRT_WHEEL_NAME}"
 rm "/tmp/${TENSORRT_WHEEL_NAME}"
 
+# download PyCUDA
+echo "Downloading PyCUDA v${PYCUDA_VERSION}..."
+TENSORRT_WHEEL_NAME=pycuda-${PYCUDA_VERSION}-cp38-cp38-linux_aarch64.whl
+WHEEL_URL="https://duckietown-public-storage.s3.amazonaws.com/assets/python/wheels/${TENSORRT_WHEEL_NAME}"
+wget -q "${WHEEL_URL}" -O "/tmp/${TENSORRT_WHEEL_NAME}"
+# install PyCUDA
+echo "Installing PyCUDA v${PYCUDA_VERSION}..."
+pip3 install "/tmp/${TENSORRT_WHEEL_NAME}"
+rm "/tmp/${TENSORRT_WHEEL_NAME}"
+
 # clean
-pip3 install pycuda
 pip3 uninstall -y dataclasses
 
 apt-get update && apt-get install g++-8 unzip -y
