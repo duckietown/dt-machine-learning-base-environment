@@ -78,6 +78,8 @@ ENV PYTORCHVISION_VERSION 0.8.0a0+2f40a48
 
 ENV TENSORRT_VERSION 7.1.3.4
 
+ENV PYCUDA_VERSION 2021.1
+
 #! install apt dependencies
 COPY ./dependencies-apt.txt "${REPO_PATH}/"
 RUN dt-apt-install ${REPO_PATH}/dependencies-apt.txt
@@ -92,12 +94,13 @@ ENV PIP_INDEX_URL=${PIP_INDEX_URL}
 COPY ./requirements.txt "${REPO_PATH}/"
 RUN pip3 install --use-feature=2020-resolver -r ${REPO_PATH}/requirements.txt
 
-#! install ML Related Stuff 
+#! Symbolic Link:
+RUN ln -s /usr/local/cuda-10.2 /usr/local/cuda
+
+#! install ML Related Stuff
 COPY assets/${ARCH} "${REPO_PATH}/install"
 RUN "${REPO_PATH}/install/install.sh"
 
-#! Symbolic Link:
-RUN ln -s /usr/local/cuda-10.2 /usr/local/cuda
 
 # ==================================================>
 # ==> Do not change the code below this line
