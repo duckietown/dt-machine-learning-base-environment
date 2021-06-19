@@ -11,7 +11,7 @@ echo "deb https://developer.download.nvidia.com/compute/machine-learning/repos/u
     > /etc/apt/sources.list.d/nvidia-ml.list
 
 # install CUDA 10.2
-apt update
+apt-get update
 apt-get install -y --no-install-recommends \
     cuda-cudart-$CUDA_PKG_VERSION \
     cuda-compat-10-2 \

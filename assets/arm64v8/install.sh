@@ -2,7 +2,7 @@
 
 set -e
 
-apt update
+apt-get update
 apt-get install -y libopenblas-base libopenmpi-dev
 rm -rf /var/lib/apt/lists/*
 
