@@ -91,13 +91,13 @@ ENV PIP_INDEX_URL=${PIP_INDEX_URL}
 RUN echo PIP_INDEX_URL=${PIP_INDEX_URL}
 
 COPY ./dependencies-py3.txt "${REPO_PATH}/"
-RUN pip3 install --use-feature=2020-resolver -r ${REPO_PATH}/dependencies-py3.txt
+RUN pip3 install  -r ${REPO_PATH}/dependencies-py3.txt
 
 #! install Zuper dependencies
 ARG PIP_INDEX_URL="https://pypi.org/simple"
 ENV PIP_INDEX_URL=${PIP_INDEX_URL}
 COPY ./requirements.txt "${REPO_PATH}/"
-RUN pip3 install --use-feature=2020-resolver -r ${REPO_PATH}/requirements.txt
+RUN pip3 install  -r ${REPO_PATH}/requirements.txt
 
 #! Symbolic Link:
 RUN ln -s /usr/local/cuda-10.2 /usr/local/cuda
