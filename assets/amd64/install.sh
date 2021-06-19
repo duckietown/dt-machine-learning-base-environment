@@ -8,11 +8,11 @@ sudo apt-key adv --fetch-keys \
 echo "deb https://developer.download.nvidia.com/compute/cuda/repos/ubuntu1804/x86_64 /" \
     > /etc/apt/sources.list.d/cuda.list
 echo "deb https://developer.download.nvidia.com/compute/machine-learning/repos/ubuntu1804/x86_64 /" \
-    > /etc/apt/sources.list.d/nvidia-ml.list 
+    > /etc/apt/sources.list.d/nvidia-ml.list
 
 # install CUDA 10.2
 apt update
-apt install -y --no-install-recommends \
+apt-get install -y --no-install-recommends \
     cuda-cudart-$CUDA_PKG_VERSION \
     cuda-compat-10-2 \
     cuda-libraries-$CUDA_PKG_VERSION \

@@ -3,7 +3,7 @@
 set -e
 
 apt update
-apt install -y libopenblas-base libopenmpi-dev
+apt-get install -y libopenblas-base libopenmpi-dev
 rm -rf /var/lib/apt/lists/*
 
 # download PyTorch
