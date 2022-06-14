@@ -55,37 +55,36 @@ ENV LANG C.UTF-8
 # ==================================================>
 # ==> Do not change the code above this line
 
-#! add cuda to path
+# add cuda to path
 ENV PATH /usr/local/nvidia/bin:/usr/local/cuda/bin:${PATH}
 ENV LD_LIBRARY_PATH /usr/local/nvidia/lib:/usr/local/nvidia/lib64
 
-#! nvidia-container-runtime
+# nvidia-container-runtime
 # https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/user-guide.html
 ENV NVIDIA_VISIBLE_DEVICES all
 ENV NVIDIA_DRIVER_CAPABILITIES all
-# TODO: Fix requreiment to elimitate old GPU to run the dt-ml image
-#ENV NVIDIA_REQUIRE_ARCH "maxwell pascal volta turing ampere"
-#ENV NVIDIA_REQUIRE_CUDA "cuda>=10.2"
 
-#! VERSIONING CONFIGURATION
-# this is mainly for AMD64 as on Jetson it comes with the image
+# this defines the "interface" to our ML backend, it is important to ensure compatibility across architectures
+# - CUDA
 ENV CUDA_VERSION 10.2.89
 ENV CUDA_PKG_VERSION 10-2=$CUDA_VERSION-1
+# - NCCL
 ENV NCCL_VERSION 2.8.4
+# - CuDNN
 ENV CUDNN_VERSION 8.1.1.33
-
+# - PyTorch
 ENV PYTORCH_VERSION 1.7.0
 ENV PYTORCHVISION_VERSION 0.8.0a0+2f40a48
-
+# - TensorRT
 ENV TENSORRT_VERSION 7.1.3.4
-
+# - PyCuda
 ENV PYCUDA_VERSION 2021.1
 
-#! install apt dependencies
+# install apt dependencies
 COPY ./dependencies-apt.txt "${REPO_PATH}/"
 RUN dt-apt-install ${REPO_PATH}/dependencies-apt.txt
 
-#! install python3 dependencies
+# install python3 dependencies
 ARG PIP_INDEX_URL="https://pypi.org/simple"
 ENV PIP_INDEX_URL=${PIP_INDEX_URL}
 RUN echo PIP_INDEX_URL=${PIP_INDEX_URL}
@@ -93,16 +92,10 @@ RUN echo PIP_INDEX_URL=${PIP_INDEX_URL}
 COPY ./dependencies-py3.txt "${REPO_PATH}/"
 RUN pip3 install  -r ${REPO_PATH}/dependencies-py3.txt
 
-#! install Zuper dependencies
-ARG PIP_INDEX_URL="https://pypi.org/simple"
-ENV PIP_INDEX_URL=${PIP_INDEX_URL}
-COPY ./requirements.txt "${REPO_PATH}/"
-RUN pip3 install  -r ${REPO_PATH}/requirements.txt
-
-#! Symbolic Link:
+# symlink for CUDA
 RUN ln -s /usr/local/cuda-10.2 /usr/local/cuda
 
-#! install ML Related Stuff
+# install ML related stuff
 COPY assets/${ARCH} "${REPO_PATH}/install"
 RUN "${REPO_PATH}/install/install.sh"
 
