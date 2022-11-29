@@ -86,7 +86,7 @@ COPY ./dependencies-apt.txt "${REPO_PATH}/"
 RUN dt-apt-install ${REPO_PATH}/dependencies-apt.txt
 
 #! install python3 dependencies
-ARG PIP_INDEX_URL="https://pypi.org/simple"
+ARG PIP_INDEX_URL="https://pypi.org/simple/"
 ENV PIP_INDEX_URL=${PIP_INDEX_URL}
 RUN echo PIP_INDEX_URL=${PIP_INDEX_URL}
 
@@ -95,7 +95,7 @@ COPY ./dependencies-py3.* "${REPO_PATH}/"
 RUN python3 -m pip install  -r ${REPO_PATH}/dependencies-py3.txt
 
 #! install Zuper dependencies
-ARG PIP_INDEX_URL="https://pypi.org/simple"
+ARG PIP_INDEX_URL="https://pypi.org/simple/"
 ENV PIP_INDEX_URL=${PIP_INDEX_URL}
 COPY ./requirements.txt "${REPO_PATH}/"
 RUN python3 -m pip install  -r ${REPO_PATH}/requirements.txt
