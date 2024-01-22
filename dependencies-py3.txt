@@ -1,4 +1,7 @@
+# LIST YOUR PYTHON3 PACKAGES HERE
+# NOTE: only place non-Duckietown libraries here; pin versions only if necessary
 # Non-Architecture Specific Packages Only
+
 tqdm
 seaborn
 pandas
@@ -7,3 +10,9 @@ scipy>=1.4.1
 numpy>=1.18.5
 cython
 
+
+# zuper deps
+zuper-nodes-z6
+zuper-typing-z6
+zuper-ipce-z6
+zuper-commons-z6
