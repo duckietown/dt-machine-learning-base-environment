@@ -12,5 +12,4 @@
 # YOUR FILES LISTED BELOW THIS LINE (IMPORTANT: PREPEND !)
 # ----------------------------------------------------------------------------
 
-!requirements*.txt
 !whl_builder
