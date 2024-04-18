@@ -1,9 +1,9 @@
 # Non-Architecture Specific Packages Only
-tqdm
-seaborn
-pandas
-matplotlib>=3.2.2
-scipy>=1.4.1
-numpy>=1.18.5
-cython
+tqdm==4.66.2
+seaborn==0.13.2
+pandas==2.0.3
+matplotlib==3.7.5
+scipy==1.10.1
+numpy==1.24.4
+Cython==3.0.10
 
