@@ -1,6 +1,5 @@
 # LIST YOUR PYTHON3 PACKAGES HERE
-# NOTE: only place non-Duckietown libraries here; pin versions only if necessary
-# Non-Architecture Specific Packages Only
+# NOTE: Non-Architecture Specific Packages Only
 
 tqdm
 seaborn
@@ -16,3 +15,10 @@ zuper-nodes-z6
 zuper-typing-z6
 zuper-ipce-z6
 zuper-commons-z6
+
+
+# -- Duckietown --
+
+# protocols
+# TODO: still using daffy here
+aido-protocols-daffy
