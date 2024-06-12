@@ -2,7 +2,8 @@
 # Non-Architecture Specific Packages Only
 
 # needed for OpenCV
-libgl1-mesa-glx
+# TODO: renamed from 'libgl1-mesa-glx' to 'libglx-mesa0' for Ubuntu 24.04
+libglx-mesa0
 
 # used by matplotlib
 python3-tk
