@@ -9,16 +9,3 @@ scipy==1.13.0
 numpy==1.26.4
 Cython==3.0.10
 
-
-# zuper deps
-zuper-nodes-z6==6.2.17
-zuper-typing-z6==6.2.3
-zuper-ipce-z6==6.1.2
-zuper-commons-z6==6.2.4
-
-
-# -- Duckietown --
-
-# protocols
-# TODO: still using daffy here
-aido-protocols-daffy==6.1.1
