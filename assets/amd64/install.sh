@@ -2,20 +2,15 @@
 
 set -ex
 
-# setup nvidia repo
-sudo apt-key adv --fetch-keys \
-    https://developer.download.nvidia.com/compute/cuda/repos/ubuntu1804/x86_64/3bf863cc.pub
-    
-echo "deb https://developer.download.nvidia.com/compute/cuda/repos/ubuntu1804/x86_64 /" \
-    > /etc/apt/sources.list.d/cuda.list
-    
-sudo apt-key adv --fetch-keys \
-    https://developer.download.nvidia.com/compute/machine-learning/repos/ubuntu1804/x86_64/7fa2af80.pub
+# Remove outdated signing key (as per NVIDIA key rotation notice)
+sudo apt-key del 7fa2af80 || true
 
-echo "deb https://developer.download.nvidia.com/compute/machine-learning/repos/ubuntu1804/x86_64 /" \
-    > /etc/apt/sources.list.d/nvidia-ml.list
+# Install new CUDA keyring package (recommended method)
+wget https://developer.download.nvidia.com/compute/cuda/repos/ubuntu1804/x86_64/cuda-keyring_1.0-1_all.deb
+sudo dpkg -i cuda-keyring_1.0-1_all.deb
+rm cuda-keyring_1.0-1_all.deb
 
-# install CUDA 10.2
+# install CUDA 10.2 (cuDNN, NCCL, and TensorRT now available in CUDA repo)
 apt-get update
 apt-get install -y --no-install-recommends \
     cuda-cudart-$CUDA_PKG_VERSION \
