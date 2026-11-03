@@ -1,42 +1,24 @@
 #!/bin/bash
-
 set -ex
 
-# setup nvidia repo
-sudo apt-key adv --fetch-keys \
-    https://developer.download.nvidia.com/compute/cuda/repos/ubuntu1804/arm64/3bf863cc.pub
+# ONNX Runtime for the Jetson: the JetPack 4.6.x GPU wheel (TensorRT and CUDA execution providers) when
+# ONNXRUNTIME_GPU_WHEEL is set, the CPU-only `onnxruntime` from PyPI otherwise.
+# CUDA, cuDNN and TensorRT are NOT installed here: the NVIDIA container runtime mounts them from the host (JetPack).
+REQUIREMENTS="/tmp/onnxruntime-requirements.txt"
+if [ -n "${ONNXRUNTIME_GPU_WHEEL}" ]; then
+    WHEEL="/tmp/${ONNXRUNTIME_GPU_WHEEL_NAME}"
+    # box.com links redirect and have opaque names: download with Python and give the wheel a valid filename
+    python3 -c "import sys, urllib.request; urllib.request.urlretrieve(sys.argv[1], sys.argv[2])" \
+        "${ONNXRUNTIME_GPU_WHEEL}" "${WHEEL}"
+    if [ -n "${ONNXRUNTIME_GPU_WHEEL_SHA256}" ]; then
+        echo "${ONNXRUNTIME_GPU_WHEEL_SHA256}  ${WHEEL}" | sha256sum -c -
+    fi
+    echo "${WHEEL}" > "${REQUIREMENTS}"
+else
+    echo "onnxruntime" > "${REQUIREMENTS}"
+fi
+dt-pip3-install "${REQUIREMENTS}"
+rm -f "${REQUIREMENTS}" /tmp/pip-freeze.*.dat "${WHEEL:-}"
 
-echo "deb https://developer.download.nvidia.com/compute/cuda/repos/ubuntu1804/arm64 /" \
-    > /etc/apt/sources.list.d/cuda.list
-
-sudo apt-key adv --fetch-keys \
-    https://developer.download.nvidia.com/compute/machine-learning/repos/ubuntu1804/arm64/7fa2af80.pub
-
-echo "deb https://developer.download.nvidia.com/compute/machine-learning/repos/ubuntu1804/arm64 /" \
-    > /etc/apt/sources.list.d/nvidia-ml.list
-
-# install CUDA 10.2
-apt-get update
-apt-get install -y --no-install-recommends \
-    cuda-cudart-$CUDA_PKG_VERSION \
-    cuda-compat-10-2 \
-    cuda-libraries-$CUDA_PKG_VERSION \
-    cuda-npp-$CUDA_PKG_VERSION \
-    cuda-nvtx-$CUDA_PKG_VERSION \
-    libcublas10=10.2.2.89-1 \
-    libnccl2=$NCCL_VERSION-1+cuda10.2 \
-    libcudnn8=$CUDNN_VERSION-1+cuda10.2
-apt-mark hold \
-    libnccl2 \
-    libcudnn8 \
-    cuda-compat-10-2
-rm -rf /var/lib/apt/lists/*
-
-# TODO Install Tensor RT here
-# >>>...
-
-# Clean up
-rm -rf /usr/src/cudnn_samples_v8
-
-# clean
-pip3 uninstall -y dataclasses
+# check (the GPU providers are listed even where the host libraries are missing; they are loaded on first use)
+python3 -c "import onnxruntime as ort; print('onnxruntime', ort.__version__, ort.get_available_providers())"
