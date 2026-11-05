@@ -1,42 +1,25 @@
 #!/bin/bash
-
 set -ex
 
-# setup nvidia repo
-sudo apt-key adv --fetch-keys \
-    https://developer.download.nvidia.com/compute/cuda/repos/ubuntu1804/x86_64/3bf863cc.pub
-    
-echo "deb https://developer.download.nvidia.com/compute/cuda/repos/ubuntu1804/x86_64 /" \
-    > /etc/apt/sources.list.d/cuda.list
-    
-sudo apt-key adv --fetch-keys \
-    https://developer.download.nvidia.com/compute/machine-learning/repos/ubuntu1804/x86_64/7fa2af80.pub
+# ONNX Runtime with the CUDA (and TensorRT) execution providers, together with the CUDA 12 and cuDNN 9 user-space
+# libraries as pip packages (nvidia-*). Only the NVIDIA driver comes from the host (the NVIDIA container toolkit,
+# e.g., `docker run --gpus all`); without a GPU, inference runs on the CPU.
+REQUIREMENTS="/tmp/onnxruntime-requirements.txt"
+echo "onnxruntime-gpu[cuda,cudnn]==${ONNXRUNTIME_GPU_VERSION}" > "${REQUIREMENTS}"
+dt-pip3-install "${REQUIREMENTS}"
+rm -f "${REQUIREMENTS}" /tmp/pip-freeze.*.dat
 
-echo "deb https://developer.download.nvidia.com/compute/machine-learning/repos/ubuntu1804/x86_64 /" \
-    > /etc/apt/sources.list.d/nvidia-ml.list
+# make the pip-installed CUDA/cuDNN libraries visible to the dynamic loader (ONNX Runtime loads them with dlopen)
+python3 - <<'PYEOF'
+import glob
+import site
 
-# install CUDA 10.2
-apt-get update
-apt-get install -y --no-install-recommends \
-    cuda-cudart-$CUDA_PKG_VERSION \
-    cuda-compat-10-2 \
-    cuda-libraries-$CUDA_PKG_VERSION \
-    cuda-npp-$CUDA_PKG_VERSION \
-    cuda-nvtx-$CUDA_PKG_VERSION \
-    libcublas10=10.2.2.89-1 \
-    libnccl2=$NCCL_VERSION-1+cuda10.2 \
-    libcudnn8=$CUDNN_VERSION-1+cuda10.2
-apt-mark hold \
-    libnccl2 \
-    libcudnn8 \
-    cuda-compat-10-2
-rm -rf /var/lib/apt/lists/*
+dirs = sorted({d for p in site.getsitepackages() for d in glob.glob(f"{p}/nvidia/*/lib")})
+with open("/etc/ld.so.conf.d/nvidia-pip.conf", "w") as f:
+    f.write("\n".join(dirs) + "\n")
+print("CUDA libraries from pip:", dirs)
+PYEOF
+ldconfig
 
-# TODO Install Tensor RT here
-# >>>...
-
-# Clean up
-rm -rf /usr/src/cudnn_samples_v8
-
-# clean
-pip3 uninstall -y dataclasses
+# check
+python3 -c "import onnxruntime as ort; print('onnxruntime', ort.__version__, ort.get_available_providers())"
