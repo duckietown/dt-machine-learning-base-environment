@@ -18,7 +18,7 @@ failed = False
 
 print("===============================================================")
 print(f"Python {platform.python_version()} on {platform.machine()}")
-for var in ("CUDA_VERSION", "CUDNN_VERSION", "TENSORRT_VERSION", "ONNXRUNTIME_VERSION", "PYTORCH_VERSION"):
+for var in ("ML_PLATFORM", "CUDA_VERSION", "CUDNN_VERSION", "TENSORRT_VERSION", "ONNXRUNTIME_VERSION", "PYTORCH_VERSION"):
     print(f"+    {var}: {os.environ.get(var, '-')}")
 
 # ONNX Runtime ------------------------------------------------------------------------------------------------------
@@ -106,7 +106,9 @@ except Exception as e:
     torch = None
     failed = True
     print(f"ERROR! PyTorch is installed but cannot be loaded: {e}")
-    print("+    the Jetson PyTorch build links the CUDA libraries, which the NVIDIA container runtime mounts on a Jetson")
+    if os.environ.get("ML_PLATFORM", "").startswith("arm64v8-jetpack"):
+        print("+    the Jetson PyTorch build links the CUDA libraries, which the NVIDIA container runtime mounts on a Jetson;")
+        print("+    elsewhere use the arm64v8 image without the JetPack variant (it is what `dts` builds on a non-Jetson)")
 if torch is not None:
     print(f"PyTorch {torch.__version__}, CUDA available: {torch.cuda.is_available()}")
     if torch.cuda.is_available():

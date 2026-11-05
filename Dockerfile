@@ -10,7 +10,9 @@ ARG PROJECT_FORMAT_VERSION
 # - amd64: onnxruntime-gpu from PyPI, with the CUDA 12 and cuDNN 9 user-space libraries from pip (nvidia-* wheels);
 #   the GPU is used when the container runs with an NVIDIA driver (e.g., `--gpus all`), the CPU otherwise.
 ARG ONNXRUNTIME_GPU_VERSION="1.23.2"
-# - arm64v8: the JetPack 4.6.x build for Python 3.8 from the Jetson Zoo (https://elinux.org/Jetson_Zoo#ONNX_Runtime),
+# - arm64v8 (generic: Apple Silicon, virtual robots, other arm64 hosts): onnxruntime (CPU) from PyPI.
+ARG ONNXRUNTIME_CPU_VERSION="1.23.2"
+# - arm64v8, JetPack 4 variant: the JetPack 4.6.x build for Python 3.8 from the Jetson Zoo (https://elinux.org/Jetson_Zoo#ONNX_Runtime),
 #   with the TensorRT and CUDA execution providers (links libcudart.so.10.2, libnvinfer.so.8). Leave the wheel empty for a
 #   CPU-only image. A wheel built for another JetPack still gives a working image: its GPU providers fail to load and
 #   inference runs on the CPU. JetPack 5.1.x would be onnxruntime_gpu 1.16.0,
@@ -30,15 +32,19 @@ ARG BASE_REPOSITORY
 ARG BASE_ORGANIZATION=duckietown
 ARG BASE_TAG=${DISTRO}-${ARCH}
 ARG LAUNCHER=default
+# JetPack major version of the NVIDIA Jetson the image is built on (set by `dts devel build` on a Jetson, empty
+# elsewhere); it selects the Jetson variant, published as `<distro>-jetpack<N>-<arch>`
+ARG JETPACK=
 
 # define base image
-# The base image depends on the architecture:
+# The base image depends on the architecture and, on arm64, on whether the image is for a Jetson:
 #  - amd64 (laptops, servers): dt-commons (Ubuntu 24.04, Python 3.12).
-#  - arm64v8 (Duckiebots, Jetson Nano with JetPack 4.6.x): dt-legacy-py38-environment (Ubuntu 20.04, Python 3.8), the
-#    Python version the JetPack 4 GPU wheels exist for. CUDA, cuDNN and TensorRT are NOT installed in the image: the NVIDIA
-#    container runtime (the default Docker runtime on the Duckietown Jetson images) mounts them from the host, and Ubuntu
-#    20.04 is glibc-compatible with those host libraries.
-# Each stage defines the versions this image provides on that architecture (the "interface" to the ML backend).
+#  - arm64v8 (Apple Silicon laptops, virtual robots, other arm64 hosts): dt-commons (Ubuntu 24.04, Python 3.12), CPU only.
+#  - arm64v8, JETPACK=4 (Duckiebots, Jetson Nano with JetPack 4.6.x): dt-legacy-py38-environment (Ubuntu 20.04,
+#    Python 3.8), the Python version the JetPack 4 GPU wheels exist for. CUDA, cuDNN and TensorRT are NOT installed in the
+#    image: the NVIDIA container runtime (the default Docker runtime on the Duckietown Jetson images) mounts them from the
+#    host, and Ubuntu 20.04 is glibc-compatible with those host libraries. It only imports PyTorch on a Jetson.
+# Each stage defines the versions this image provides on that platform (the "interface" to the ML backend).
 FROM ${DOCKER_REGISTRY}/${BASE_ORGANIZATION}/${BASE_REPOSITORY}:${BASE_TAG} AS base-amd64
 # - CUDA / cuDNN: user-space libraries installed with pip next to ONNX Runtime
 # - PyTorch: the version dt-machine-learning-base-pytorch installs
@@ -49,7 +55,14 @@ ENV CUDA_VERSION=12 \
     TORCHVISION_VERSION=0.20.1 \
     LD_LIBRARY_PATH=/usr/local/nvidia/lib:/usr/local/nvidia/lib64
 
-FROM ${DOCKER_REGISTRY}/${BASE_ORGANIZATION}/dt-legacy-py38-environment:${BASE_TAG} AS base-arm64v8
+FROM ${DOCKER_REGISTRY}/${BASE_ORGANIZATION}/${BASE_REPOSITORY}:${BASE_TAG} AS base-arm64v8
+# - no CUDA: inference on the CPU
+# - PyTorch: the version dt-machine-learning-base-pytorch installs (CPU build)
+ENV ONNXRUNTIME_VERSION=1.23.2 \
+    PYTORCH_VERSION=2.5.1 \
+    TORCHVISION_VERSION=0.20.1
+
+FROM ${DOCKER_REGISTRY}/${BASE_ORGANIZATION}/dt-legacy-py38-environment:${BASE_TAG} AS base-arm64v8-jetpack4
 # - CUDA / cuDNN / TensorRT: provided by the host (JetPack 4.6.x, L4T r32.7)
 # - PyTorch: the version dt-machine-learning-base-pytorch installs (Duckietown-built Python 3.8 wheel)
 ENV CUDA_VERSION=10.2.300 \
@@ -60,7 +73,7 @@ ENV CUDA_VERSION=10.2.300 \
     TORCHVISION_VERSION=0.8.1 \
     LD_LIBRARY_PATH=/usr/local/cuda/lib64:/usr/local/cuda-10.2/lib64:/usr/lib/aarch64-linux-gnu/tegra
 
-FROM base-${ARCH} AS base
+FROM base-${ARCH}${JETPACK:+-jetpack${JETPACK}} AS base
 
 # recall all arguments
 ARG ARCH
@@ -75,7 +88,9 @@ ARG BASE_TAG
 ARG BASE_REPOSITORY
 ARG BASE_ORGANIZATION
 ARG LAUNCHER
+ARG JETPACK
 ARG ONNXRUNTIME_GPU_VERSION
+ARG ONNXRUNTIME_CPU_VERSION
 ARG ONNXRUNTIME_GPU_WHEEL
 ARG ONNXRUNTIME_GPU_WHEEL_NAME
 ARG ONNXRUNTIME_GPU_WHEEL_SHA256
@@ -113,6 +128,9 @@ ENV DT_PROJECT_NAME="${PROJECT_NAME}" \
     DT_PROJECT_LAUNCHERS_PATH="${PROJECT_LAUNCHERS_PATH}" \
     DT_LAUNCHER="${LAUNCHER}"
 
+# the platform this image was built for: amd64, arm64v8 or arm64v8-jetpack4 (images built on it can check it)
+ENV ML_PLATFORM="${ARCH}${JETPACK:+-jetpack${JETPACK}}"
+
 # CUDA tools on the path when present (host-mounted on the Jetson)
 ENV PATH=/usr/local/nvidia/bin:/usr/local/cuda/bin:${PATH}
 
@@ -134,8 +152,8 @@ ENV PIP_INDEX_URL=${PIP_INDEX_URL}
 COPY ./dependencies-py3.* "${PROJECT_PATH}/"
 RUN dt-pip3-install "${PROJECT_PATH}/dependencies-py3.*"
 
-# install ONNX Runtime (architecture specific, see the ONNXRUNTIME_* arguments at the top)
-COPY assets/${ARCH} "${PROJECT_PATH}/install"
+# install ONNX Runtime (platform specific, see the ONNXRUNTIME_* arguments at the top)
+COPY assets/${ML_PLATFORM} "${PROJECT_PATH}/install"
 RUN "${PROJECT_PATH}/install/install.sh"
 
 # copy the source code

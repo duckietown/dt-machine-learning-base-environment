@@ -1,8 +1,8 @@
 # LIST YOUR PYTHON3 PACKAGES HERE
 # NOTE: Non-Architecture Specific Packages Only
-# NOTE: amd64 images run Python 3.12 (dt-commons), arm64v8 images Python 3.8 (dt-legacy-py38-environment, for the
-#       JetPack 4 GPU wheels): packages without a release for both carry a `python_version` marker.
-#       ONNX Runtime is installed by assets/<arch>/install.sh.
+# NOTE: amd64 and arm64v8 images run Python 3.12 (dt-commons), the JetPack variant Python 3.8 (dt-legacy-py38-environment,
+#       for the JetPack 4 GPU wheels): packages without a release for both carry a `python_version` marker.
+#       ONNX Runtime is installed by assets/<platform>/install.sh.
 
 tqdm==4.66.4
 seaborn==0.13.2
