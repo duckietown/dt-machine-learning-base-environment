@@ -16,12 +16,16 @@ ARG ONNXRUNTIME_CPU_VERSION="1.23.2"
 #   with the TensorRT and CUDA execution providers (links libcudart.so.10.2, libnvinfer.so.8). Leave the wheel empty for a
 #   CPU-only image. A wheel built for another JetPack still gives a working image: its GPU providers fail to load and
 #   inference runs on the CPU. JetPack 5.1.x would be onnxruntime_gpu 1.16.0,
-#   https://nvidia.box.com/shared/static/iizg3ggrtdkqawkmebbfixo7sce6j365.whl (sha256 44c82c33c41a0670702c67af1f1425002d57f66d5efb971b35e86067d0e971d9).
+#   https://nvidia.box.com/shared/static/iizg3ggrtdkqawkmebbfixo7sce6j365.whl (sha256 44c82c33c41a0670702c67af1f1425002d57f66d5efb971b35e86067d0e971d9),
+#   with ONNXRUNTIME_JETPACK_VERSION=1.16.0.
 ARG ONNXRUNTIME_GPU_WHEEL="https://nvidia.box.com/shared/static/2sv2fv1wseihaw8ym0d4srz41dzljwxh.whl"
 # filename to give the downloaded wheel (pip needs a valid wheel filename; box.com links have opaque names)
 ARG ONNXRUNTIME_GPU_WHEEL_NAME="onnxruntime_gpu-1.11.0-cp38-cp38-linux_aarch64.whl"
 # checked after the download when set (clear it when passing another wheel)
 ARG ONNXRUNTIME_GPU_WHEEL_SHA256="127a6f95ba315b8a7a71ac52d1f4f68cd225a4887e77f11ea24091cd0211b185"
+# the version in that wheel: reported as ONNXRUNTIME_VERSION and used to pin the CPU-only fallback. It has to match
+# the wheel (the install script checks it and fails the build otherwise); Python 3.8 wheels exist on PyPI up to 1.19.2.
+ARG ONNXRUNTIME_JETPACK_VERSION="1.11.0"
 
 # ==================================================>
 # ==> Do not change the code below this line
@@ -67,10 +71,11 @@ ENV ONNXRUNTIME_VERSION=${ONNXRUNTIME_CPU_VERSION} \
 FROM ${DOCKER_REGISTRY}/${BASE_ORGANIZATION}/dt-legacy-py38-environment:${BASE_TAG} AS base-arm64v8-jetpack4
 # - CUDA / cuDNN / TensorRT: provided by the host (JetPack 4.6.x, L4T r32.7)
 # - PyTorch: the version dt-machine-learning-base-pytorch installs (Duckietown-built Python 3.8 wheel)
+ARG ONNXRUNTIME_JETPACK_VERSION
 ENV CUDA_VERSION=10.2.300 \
     CUDNN_VERSION=8.2.1.32 \
     TENSORRT_VERSION=8.2.1.9 \
-    ONNXRUNTIME_VERSION=1.11.0 \
+    ONNXRUNTIME_VERSION=${ONNXRUNTIME_JETPACK_VERSION} \
     PYTORCH_VERSION=1.7.0 \
     TORCHVISION_VERSION=0.8.1 \
     LD_LIBRARY_PATH=/usr/local/cuda/lib64:/usr/local/cuda-10.2/lib64:/usr/lib/aarch64-linux-gnu/tegra

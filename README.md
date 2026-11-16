@@ -99,5 +99,7 @@ before images that use it are built on a robot.
 | `ONNXRUNTIME_GPU_WHEEL` | JetPack 4.6.x wheel | arm64v8, JetPack: wheel URL; empty for a CPU-only image |
 | `ONNXRUNTIME_GPU_WHEEL_NAME` | `onnxruntime_gpu-1.11.0-cp38-cp38-linux_aarch64.whl` | arm64v8, JetPack: filename for the downloaded wheel |
 | `ONNXRUNTIME_GPU_WHEEL_SHA256` | checksum of the default wheel | arm64v8, JetPack: checked after the download; empty to skip |
+| `ONNXRUNTIME_JETPACK_VERSION` | `1.11.0` | arm64v8, JetPack: version in that wheel, also the pin for the CPU-only fallback; the build fails if it does not match what gets installed |
 
-For a JetPack 5.1.x robot (Xavier, Orin), use the onnxruntime_gpu 1.16.0 wheel listed in the `Dockerfile`.
+For a JetPack 5.1.x robot (Xavier, Orin), use the onnxruntime_gpu 1.16.0 wheel listed in the `Dockerfile`, with
+`ONNXRUNTIME_JETPACK_VERSION=1.16.0`.
