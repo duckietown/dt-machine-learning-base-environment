@@ -57,7 +57,7 @@ import onnxruntime as ort
 wanted = ["TensorrtExecutionProvider", "CUDAExecutionProvider", "CPUExecutionProvider"]
 providers = [p for p in wanted if p in ort.get_available_providers()]
 session = ort.InferenceSession("model.onnx", providers=providers)
-print(session.get_providers())  # the providers actually in use
+print(session.get_providers())  # the providers registered, highest priority first
 ```
 
 On the Jetson, the TensorRT provider builds an engine the first time it sees a model, which takes minutes on a Nano.
