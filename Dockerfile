@@ -48,9 +48,10 @@ ARG JETPACK=
 FROM ${DOCKER_REGISTRY}/${BASE_ORGANIZATION}/${BASE_REPOSITORY}:${BASE_TAG} AS base-amd64
 # - CUDA / cuDNN: user-space libraries installed with pip next to ONNX Runtime
 # - PyTorch: the version dt-machine-learning-base-pytorch installs
+ARG ONNXRUNTIME_GPU_VERSION
 ENV CUDA_VERSION=12 \
     CUDNN_VERSION=9 \
-    ONNXRUNTIME_VERSION=1.23.2 \
+    ONNXRUNTIME_VERSION=${ONNXRUNTIME_GPU_VERSION} \
     PYTORCH_VERSION=2.5.1 \
     TORCHVISION_VERSION=0.20.1 \
     LD_LIBRARY_PATH=/usr/local/nvidia/lib:/usr/local/nvidia/lib64
@@ -58,7 +59,8 @@ ENV CUDA_VERSION=12 \
 FROM ${DOCKER_REGISTRY}/${BASE_ORGANIZATION}/${BASE_REPOSITORY}:${BASE_TAG} AS base-arm64v8
 # - no CUDA: inference on the CPU
 # - PyTorch: the version dt-machine-learning-base-pytorch installs (CPU build)
-ENV ONNXRUNTIME_VERSION=1.23.2 \
+ARG ONNXRUNTIME_CPU_VERSION
+ENV ONNXRUNTIME_VERSION=${ONNXRUNTIME_CPU_VERSION} \
     PYTORCH_VERSION=2.5.1 \
     TORCHVISION_VERSION=0.20.1
 
