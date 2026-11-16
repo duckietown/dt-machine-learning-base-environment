@@ -71,6 +71,13 @@ for i in range(3):
     for j in range(3):
         ref += np.einsum("oc,nchw->nohw", w[:, :, i, j], xp[:, :, i:i + 32, j:j + 32])
 ref = np.maximum(ref, 0)
+# How close a provider's result has to be to that reference, as (atol, rtol). On the CPU it is near-exact. The CUDA
+# provider, though, uses TF32 by default on Ampere and newer GPUs: ~10 mantissa bits, so a convolution can land ~1e-3
+# of its scale away from the float32 reference (6.3e-03 for this model, 5x what atol=1e-3 allows). Scale the GPU
+# tolerance by the magnitude of the reference; a genuinely wrong result (bad padding, layout or weights) misses by far
+# more than that, and the CPU keeps its tight bound.
+CPU_TOLERANCE = (1e-3, 1e-5)
+GPU_TOLERANCE = (2e-3 * max(1.0, float(np.abs(ref).max())), 1e-3)
 
 ran_on_gpu = False
 for provider in [p for p in GPU_PROVIDERS if p in ort.get_available_providers()] + ["CPUExecutionProvider"]:
@@ -80,15 +87,24 @@ for provider in [p for p in GPU_PROVIDERS if p in ort.get_available_providers()]
         sess = ort.InferenceSession(model_bytes, providers=providers)
         setup = time.time() - t0
         y = sess.run(None, {"x": x})[0]
-        active = sess.get_providers()[0]
+        # the providers registered for the session, highest priority first: the first one is the one ONNX Runtime
+        # prefers, not a report of what executed (it still assigns individual nodes to the CPU when it has to)
+        preferred = sess.get_providers()[0]
     except Exception as e:
         print(f"+    {provider}: FAILED ({str(e).splitlines()[0][:160]})")
+        # a GPU provider failing is expected where the host libraries are absent: inference falls back to the CPU.
+        # The CPU provider failing never is, and since it is the last one tried this also catches "nothing ran".
+        if provider == "CPUExecutionProvider":
+            failed = True
         continue
-    ok = np.allclose(y, ref, atol=1e-3)
-    print(f"+    {provider}: ran on {active}, result {'correct' if ok else 'WRONG'} (session setup {setup:.1f} s)")
+    atol, rtol = CPU_TOLERANCE if provider == "CPUExecutionProvider" else GPU_TOLERANCE
+    deviation = float(np.abs(y - ref).max())
+    ok = np.allclose(y, ref, atol=atol, rtol=rtol)
+    print(f"+    {provider}: prefers {preferred}, result {'correct' if ok else 'WRONG'} "
+          f"(max deviation {deviation:.1e}, tolerance {atol:.1e}; session setup {setup:.1f} s)")
     if not ok:
         failed = True
-    if active in GPU_PROVIDERS:
+    if preferred in GPU_PROVIDERS:
         ran_on_gpu = True
 print(f"ONNX Runtime GPU inference: {'yes' if ran_on_gpu else 'no (CPU only)'}")
 if REQUIRE_GPU and not ran_on_gpu:
@@ -99,9 +115,14 @@ if REQUIRE_GPU and not ran_on_gpu:
 print("---------------------------------------------------------------")
 try:
     import torch
-except ModuleNotFoundError:
+except ModuleNotFoundError as e:
     torch = None
-    print("PyTorch: not installed (it is provided by dt-machine-learning-base-pytorch)")
+    if getattr(e, "name", None) == "torch":
+        print("PyTorch: not installed (it is provided by dt-machine-learning-base-pytorch)")
+    else:
+        # PyTorch itself is there, one of the modules it imports is not: a broken install, not an absent one
+        failed = True
+        print(f"ERROR! PyTorch is installed but a module it needs is missing: {e}")
 except Exception as e:
     torch = None
     failed = True
